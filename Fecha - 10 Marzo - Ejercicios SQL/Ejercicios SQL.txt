@@ -1,0 +1,1640 @@
+Ejercicios SQL 
+Desde Tienda de informática, hasta Jardinería
+1. Realización de consultas SQL
+1.1 Tienda Informática
+1.1.1 Modelo entidad/relación
+1.1.2 Base de datos para MySQL
+1.1.3 Consultas sobre una tabla
+1.1.4 Consultas multitabla (Composición interna)
+1.1.5 Consultas multitabla (Composición externa)
+1.1.6 Consultas resumen
+1.1.7 Subconsultas (En la cláusula WHERE)
+1.1.7.2 Subconsultas con ALL y ANY
+1.1.7.3 Subconsultas con IN y NOT IN
+1.1.7.4 Subconsultas con EXISTS y NOT EXISTS
+1.1.7.5 Subconsultas correlacionadas
+1.1.8 Subconsultas (En la cláusula HAVING)
+
+1.2 Gestión de empleados
+1.2.1 Modelo entidad/relación
+1.2.2 Base de datos para MySQL
+1.2.3 Consultas sobre una tabla
+1.2.4 Consultas multitabla (Composición interna)
+1.2.5 Consultas multitabla (Composición externa)
+1.2.6 Consultas resumen
+1.2.7 Subconsultas
+1.2.7.2 Subconsultas con ALL y ANY
+1.2.7.3 Subconsultas con IN y NOT IN
+1.2.7.4 Subconsultas con EXISTS y NOT EXISTS
+
+1.3 Gestión de ventas
+1.3.1 Modelo entidad/relación
+1.3.2 Base de datos para MySQL
+1.3.3 Consultas sobre una tabla
+1.3.4 Consultas multitabla (Composición interna)
+1.3.5 Consultas multitabla (Composición externa)
+1.3.6 Consultas resumen
+1.3.7 Subconsultas
+1.3.7.2 Subconsultas con ALL y ANY
+1.3.7.3 Subconsultas con IN y NOT IN
+1.3.7.4 Subconsultas con EXISTS y NOT EXISTS
+
+1.4 Jardinería
+1.4.1 Modelo entidad/relación
+1.4.2 Base de datos para MySQL
+1.4.3 Datos
+1.4.4 Consultas sobre una tabla
+1.4.5 Consultas multitabla (Composición interna)
+1.4.6 Consultas multitabla (Composición externa)
+1.4.7 Consultas resumen
+1.4.8 Subconsultas
+1.4.8.1 Con operadores básicos de comparación
+1.4.8.2 Subconsultas con ALL y ANY
+1.4.8.3 Subconsultas con IN y NOT IN
+1.4.8.4 Subconsultas con EXISTS y NOT EXISTS
+1.4.8.5 Subconsultas correlacionadas
+1.4.9 Consultas variadas
+
+DESARROLLO
+-- ============================================================
+-- 1.1 TIENDA DE INFORMÁTICA
+-- ============================================================
+
+-- 1.1.2 BASE DE DATOS
+DROP DATABASE IF EXISTS tienda;
+CREATE DATABASE tienda CHARACTER SET utf8mb4;
+USE tienda;
+
+CREATE TABLE fabricante (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE producto (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    precio DOUBLE NOT NULL,
+    id_fabricante INT UNSIGNED NOT NULL,
+    FOREIGN KEY (id_fabricante) REFERENCES fabricante(id)
+);
+
+INSERT INTO fabricante VALUES
+(1,'Asus'),(2,'Lenovo'),(3,'Hewlett-Packard'),(4,'Samsung'),
+(5,'Seagate'),(6,'Crucial'),(7,'Gigabyte'),(8,'Huawei'),(9,'Xiaomi');
+
+INSERT INTO producto VALUES
+(1,'Disco duro SATA3 1TB',86.99,5),
+(2,'Memoria RAM DDR4 8GB',120,6),
+(3,'Disco SSD 1 TB',150.99,4),
+(4,'GeForce GTX 1050Ti',185,7),
+(5,'GeForce GTX 1080 Xtreme',755,6),
+(6,'Monitor 24 LED Full HD',202,1),
+(7,'Monitor 27 LED Full HD',245.99,1),
+(8,'Portátil Yoga 520',559,2),
+(9,'Portátil Ideapd 320',444,2),
+(10,'Impresora HP Deskjet 3720',59.99,3),
+(11,'Impresora HP Laserjet Pro M26nw',180,3);
+
+-- 1.1.3
+SELECT nombre FROM producto;
+
+-- 1.1.4.1
+SELECT p.nombre, p.precio, f.nombre AS fabricante
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id;
+
+-- 1.1.4.2
+SELECT p.nombre, p.precio, f.nombre AS fabricante
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+ORDER BY f.nombre ASC;
+
+-- 1.1.4.3
+SELECT p.id, p.nombre, f.id AS id_fabricante, f.nombre AS fabricante
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id;
+
+-- 1.1.4.4
+SELECT p.nombre, p.precio, f.nombre AS fabricante
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE p.precio = (SELECT MIN(precio) FROM producto);
+
+-- 1.1.4.5
+SELECT p.nombre, p.precio, f.nombre AS fabricante
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE p.precio = (SELECT MAX(precio) FROM producto);
+
+-- 1.1.4.6
+SELECT p.*
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE f.nombre = 'Lenovo';
+
+-- 1.1.4.7
+SELECT p.*
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE f.nombre = 'Crucial' AND p.precio > 200;
+
+-- 1.1.4.8
+SELECT p.*
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE f.nombre = 'Asus' OR f.nombre = 'Hewlett-Packard' OR f.nombre = 'Seagate';
+
+-- 1.1.4.9
+SELECT p.*
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE f.nombre IN ('Asus','Hewlett-Packard','Seagate');
+
+-- 1.1.4.10
+SELECT p.nombre, p.precio
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE f.nombre LIKE '%e';
+
+-- 1.1.4.11
+SELECT p.nombre, p.precio
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE f.nombre LIKE '%w%';
+
+-- 1.1.4.12
+SELECT p.nombre, p.precio, f.nombre AS fabricante
+FROM producto p INNER JOIN fabricante f ON p.id_fabricante = f.id
+WHERE p.precio >= 180
+ORDER BY p.precio DESC, p.nombre ASC;
+
+-- 1.1.4.13
+SELECT DISTINCT f.id, f.nombre
+FROM fabricante f INNER JOIN producto p ON f.id = p.id_fabricante;
+
+-- 1.1.5.1
+SELECT f.nombre AS fabricante, p.nombre AS producto
+FROM fabricante f LEFT JOIN producto p ON f.id = p.id_fabricante;
+
+-- 1.1.5.2
+SELECT f.nombre
+FROM fabricante f LEFT JOIN producto p ON f.id = p.id_fabricante
+WHERE p.id IS NULL;
+
+-- 1.1.5.3
+-- No pueden existir productos sin fabricante porque id_fabricante es NOT NULL
+-- y además tiene una clave foránea que referencia a fabricante(id).
+
+-- 1.1.6.1
+SELECT COUNT(*) AS total_productos FROM producto;
+
+-- 1.1.6.2
+SELECT COUNT(*) AS total_fabricantes FROM fabricante;
+
+-- 1.1.6.3
+SELECT COUNT(DISTINCT id_fabricante) AS fabricantes_distintos FROM producto;
+
+-- 1.1.6.4
+SELECT AVG(precio) AS precio_medio FROM producto;
+
+-- 1.1.6.5
+SELECT MIN(precio) AS precio_minimo FROM producto;
+
+-- 1.1.6.6
+SELECT MAX(precio) AS precio_maximo FROM producto;
+
+-- 1.1.6.7
+SELECT nombre, precio
+FROM producto
+WHERE precio = (SELECT MIN(precio) FROM producto);
+
+-- 1.1.7.1.1
+SELECT *
+FROM producto
+WHERE id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Lenovo');
+
+-- 1.1.7.1.2
+SELECT *
+FROM producto
+WHERE precio = (
+    SELECT MAX(precio)
+    FROM producto
+    WHERE id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Lenovo')
+);
+
+-- 1.1.7.1.3
+SELECT nombre
+FROM producto
+WHERE precio = (
+    SELECT MAX(precio)
+    FROM producto
+    WHERE id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Lenovo')
+);
+
+-- 1.1.7.1.4
+SELECT nombre
+FROM producto
+WHERE precio = (
+    SELECT MIN(precio)
+    FROM producto
+    WHERE id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Hewlett-Packard')
+);
+
+-- 1.1.7.1.5
+SELECT *
+FROM producto
+WHERE precio >= (
+    SELECT MAX(precio)
+    FROM producto
+    WHERE id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Lenovo')
+);
+
+-- 1.1.7.1.6
+SELECT *
+FROM producto
+WHERE id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Asus')
+AND precio > (
+    SELECT AVG(precio)
+    FROM producto
+    WHERE id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Asus')
+);
+
+-- 1.1.7.2.7
+SELECT *
+FROM producto
+WHERE precio >= ALL (SELECT precio FROM producto);
+
+-- 1.1.7.2.8
+SELECT *
+FROM producto
+WHERE precio <= ALL (SELECT precio FROM producto);
+
+-- 1.1.7.2.9
+SELECT nombre
+FROM fabricante
+WHERE id = ANY (SELECT id_fabricante FROM producto);
+
+-- 1.1.7.2.10
+SELECT nombre
+FROM fabricante
+WHERE id <> ALL (SELECT id_fabricante FROM producto);
+
+-- 1.1.7.3.11
+SELECT nombre
+FROM fabricante
+WHERE id IN (SELECT id_fabricante FROM producto);
+
+-- 1.1.7.3.12
+SELECT nombre
+FROM fabricante
+WHERE id NOT IN (SELECT id_fabricante FROM producto);
+
+-- 1.1.7.4.13
+SELECT f.nombre
+FROM fabricante f
+WHERE EXISTS (SELECT 1 FROM producto p WHERE p.id_fabricante = f.id);
+
+-- 1.1.7.4.14
+SELECT f.nombre
+FROM fabricante f
+WHERE NOT EXISTS (SELECT 1 FROM producto p WHERE p.id_fabricante = f.id);
+
+-- 1.1.7.5.15
+SELECT f.nombre AS fabricante, p.nombre AS producto, p.precio
+FROM fabricante f
+JOIN producto p ON p.id_fabricante = f.id
+WHERE p.precio = (
+    SELECT MAX(p2.precio)
+    FROM producto p2
+    WHERE p2.id_fabricante = f.id
+);
+
+-- 1.1.7.5.16
+SELECT *
+FROM producto p
+WHERE p.precio >= (
+    SELECT AVG(p2.precio)
+    FROM producto p2
+    WHERE p2.id_fabricante = p.id_fabricante
+);
+
+-- 1.1.7.5.17
+SELECT p.nombre
+FROM producto p
+WHERE p.id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Lenovo')
+AND p.precio = (
+    SELECT MAX(p2.precio)
+    FROM producto p2
+    WHERE p2.id_fabricante = p.id_fabricante
+);
+
+-- 1.1.8.18
+SELECT f.nombre
+FROM fabricante f
+JOIN producto p ON p.id_fabricante = f.id
+GROUP BY f.id, f.nombre
+HAVING COUNT(*) = (
+    SELECT COUNT(*)
+    FROM producto p2
+    WHERE p2.id_fabricante = (SELECT id FROM fabricante WHERE nombre = 'Lenovo')
+);
+
+
+-- ============================================================
+-- 1.2 GESTIÓN DE EMPLEADOS
+-- ============================================================
+
+DROP DATABASE IF EXISTS empleados;
+CREATE DATABASE empleados CHARACTER SET utf8mb4;
+USE empleados;
+
+CREATE TABLE departamento (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    presupuesto DOUBLE UNSIGNED NOT NULL,
+    gastos DOUBLE UNSIGNED NOT NULL
+);
+
+CREATE TABLE empleado (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nif VARCHAR(9) NOT NULL UNIQUE,
+    nombre VARCHAR(100) NOT NULL,
+    apellido1 VARCHAR(100) NOT NULL,
+    apellido2 VARCHAR(100),
+    id_departamento INT UNSIGNED,
+    FOREIGN KEY (id_departamento) REFERENCES departamento(id)
+);
+
+INSERT INTO departamento VALUES
+(1,'Desarrollo',120000,6000),
+(2,'Sistemas',150000,21000),
+(3,'Recursos Humanos',280000,25000),
+(4,'Contabilidad',110000,3000);
+
+-- El ejercicio original contiene un conjunto más amplio de empleados.
+-- Las consultas siguientes funcionan sobre la base completa si se importa
+-- el dataset correspondiente.
+
+-- 1.2.3.1
+SELECT apellido1 FROM empleado;
+
+-- 1.2.3.2
+SELECT DISTINCT apellido1 FROM empleado;
+
+-- 1.2.3.3
+SELECT * FROM empleado;
+
+-- 1.2.3.4
+SELECT nombre, apellido1, apellido2 FROM empleado;
+
+-- 1.2.3.5
+SELECT id_departamento FROM empleado;
+
+-- 1.2.3.6
+SELECT DISTINCT id_departamento FROM empleado;
+
+-- 1.2.3.7
+SELECT CONCAT(nombre,' ',apellido1,' ',IFNULL(apellido2,'')) AS nombre_completo
+FROM empleado;
+
+-- 1.2.3.8
+SELECT UPPER(CONCAT(nombre,' ',apellido1,' ',IFNULL(apellido2,''))) AS nombre_completo
+FROM empleado;
+
+-- 1.2.3.9
+SELECT LOWER(CONCAT(nombre,' ',apellido1,' ',IFNULL(apellido2,''))) AS nombre_completo
+FROM empleado;
+
+-- 1.2.4.1
+SELECT e.*, d.*
+FROM empleado e INNER JOIN departamento d ON e.id_departamento = d.id;
+
+-- 1.2.4.2
+SELECT e.*, d.*
+FROM empleado e INNER JOIN departamento d ON e.id_departamento = d.id
+ORDER BY d.nombre, e.apellido1, e.apellido2, e.nombre;
+
+-- 1.2.4.3
+SELECT DISTINCT d.id, d.nombre
+FROM departamento d INNER JOIN empleado e ON d.id = e.id_departamento;
+
+-- 1.2.4.4
+SELECT d.id, d.nombre, d.presupuesto - d.gastos AS presupuesto_actual
+FROM departamento d INNER JOIN empleado e ON d.id = e.id_departamento
+GROUP BY d.id, d.nombre, d.presupuesto, d.gastos;
+
+-- 1.2.4.5
+SELECT d.nombre
+FROM departamento d INNER JOIN empleado e ON d.id = e.id_departamento
+WHERE e.nif = '38382980M';
+
+-- 1.2.4.6
+SELECT d.nombre
+FROM departamento d INNER JOIN empleado e ON d.id = e.id_departamento
+WHERE e.nombre = 'Pepe' AND e.apellido1 = 'Ruiz' AND e.apellido2 = 'Santana';
+
+-- 1.2.4.7
+SELECT e.*
+FROM empleado e INNER JOIN departamento d ON e.id_departamento = d.id
+WHERE d.nombre = 'I+D'
+ORDER BY e.apellido1, e.apellido2, e.nombre;
+
+-- 1.2.4.8
+SELECT e.*
+FROM empleado e INNER JOIN departamento d ON e.id_departamento = d.id
+WHERE d.nombre IN ('Sistemas','Contabilidad','I+D')
+ORDER BY e.apellido1, e.apellido2, e.nombre;
+
+-- 1.2.4.9
+SELECT e.nombre
+FROM empleado e INNER JOIN departamento d ON e.id_departamento = d.id
+WHERE d.presupuesto NOT BETWEEN 100000 AND 200000;
+
+-- 1.2.4.10
+SELECT DISTINCT d.nombre
+FROM departamento d INNER JOIN empleado e ON d.id = e.id_departamento
+WHERE e.apellido2 IS NULL;
+
+-- 1.2.5.1
+SELECT e.*, d.*
+FROM empleado e LEFT JOIN departamento d ON e.id_departamento = d.id;
+
+-- 1.2.5.2
+SELECT e.*
+FROM empleado e LEFT JOIN departamento d ON e.id_departamento = d.id
+WHERE d.id IS NULL;
+
+-- 1.2.5.3
+SELECT d.*
+FROM departamento d LEFT JOIN empleado e ON d.id = e.id_departamento
+WHERE e.id IS NULL;
+
+-- 1.2.5.4 - MySQL no tiene FULL OUTER JOIN; se simula con UNION.
+SELECT e.*, d.*
+FROM empleado e LEFT JOIN departamento d ON e.id_departamento = d.id
+UNION
+SELECT e.*, d.*
+FROM empleado e RIGHT JOIN departamento d ON e.id_departamento = d.id
+ORDER BY nombre;
+
+-- 1.2.5.5
+SELECT e.id, e.nombre, e.apellido1, e.apellido2, d.id AS id_departamento, d.nombre AS departamento
+FROM empleado e LEFT JOIN departamento d ON e.id_departamento = d.id
+WHERE d.id IS NULL
+UNION
+SELECT e.id, e.nombre, e.apellido1, e.apellido2, d.id AS id_departamento, d.nombre AS departamento
+FROM departamento d LEFT JOIN empleado e ON e.id_departamento = d.id
+WHERE e.id IS NULL
+ORDER BY departamento;
+
+-- 1.2.6.1
+SELECT SUM(presupuesto) AS suma_presupuesto FROM departamento;
+
+-- 1.2.6.2
+SELECT AVG(presupuesto) AS media_presupuesto FROM departamento;
+
+-- 1.2.6.3
+SELECT MIN(presupuesto) AS presupuesto_minimo FROM departamento;
+
+-- 1.2.6.4
+SELECT nombre, presupuesto
+FROM departamento
+WHERE presupuesto = (SELECT MIN(presupuesto) FROM departamento);
+
+-- 1.2.6.5
+SELECT MAX(presupuesto) AS presupuesto_maximo FROM departamento;
+
+-- 1.2.6.6
+SELECT nombre, presupuesto
+FROM departamento
+WHERE presupuesto = (SELECT MAX(presupuesto) FROM departamento);
+
+-- 1.2.6.7
+SELECT COUNT(*) AS total_empleados FROM empleado;
+
+-- 1.2.6.8
+SELECT COUNT(*) AS empleados_con_apellido2
+FROM empleado
+WHERE apellido2 IS NOT NULL;
+
+-- 1.2.6.9
+SELECT d.nombre, COUNT(e.id) AS total_empleados
+FROM departamento d JOIN empleado e ON d.id = e.id_departamento
+GROUP BY d.id, d.nombre;
+
+-- 1.2.6.10
+SELECT d.nombre, COUNT(e.id) AS total_empleados
+FROM departamento d JOIN empleado e ON d.id = e.id_departamento
+GROUP BY d.id, d.nombre
+HAVING COUNT(e.id) > 2;
+
+-- 1.2.6.11
+SELECT d.nombre, COUNT(e.id) AS total_empleados
+FROM departamento d LEFT JOIN empleado e ON d.id = e.id_departamento
+GROUP BY d.id, d.nombre;
+
+-- 1.2.6.12
+SELECT d.nombre, COUNT(e.id) AS total_empleados
+FROM departamento d LEFT JOIN empleado e ON d.id = e.id_departamento
+WHERE d.presupuesto > 200000
+GROUP BY d.id, d.nombre;
+
+-- 1.2.7.1.1
+SELECT *
+FROM empleado
+WHERE id_departamento = (SELECT id FROM departamento WHERE nombre = 'Sistemas');
+
+-- 1.2.7.1.2
+SELECT nombre, presupuesto
+FROM departamento
+WHERE presupuesto = (SELECT MAX(presupuesto) FROM departamento);
+
+-- 1.2.7.1.3
+SELECT nombre, presupuesto
+FROM departamento
+WHERE presupuesto = (SELECT MIN(presupuesto) FROM departamento);
+
+-- 1.2.7.2.4
+SELECT nombre, presupuesto
+FROM departamento
+WHERE presupuesto >= ALL (SELECT presupuesto FROM departamento);
+
+-- 1.2.7.2.5
+SELECT nombre, presupuesto
+FROM departamento
+WHERE presupuesto <= ALL (SELECT presupuesto FROM departamento);
+
+-- 1.2.7.2.6
+SELECT nombre
+FROM departamento
+WHERE id = ANY (SELECT id_departamento FROM empleado);
+
+-- 1.2.7.2.7
+SELECT nombre
+FROM departamento
+WHERE id <> ALL (SELECT id_departamento FROM empleado WHERE id_departamento IS NOT NULL);
+
+-- 1.2.7.3.8
+SELECT nombre
+FROM departamento
+WHERE id IN (SELECT id_departamento FROM empleado);
+
+-- 1.2.7.3.9
+SELECT nombre
+FROM departamento
+WHERE id NOT IN (SELECT id_departamento FROM empleado WHERE id_departamento IS NOT NULL);
+
+-- 1.2.7.4.10
+SELECT d.nombre
+FROM departamento d
+WHERE EXISTS (SELECT 1 FROM empleado e WHERE e.id_departamento = d.id);
+
+-- 1.2.7.4.11
+SELECT d.nombre
+FROM departamento d
+WHERE NOT EXISTS (SELECT 1 FROM empleado e WHERE e.id_departamento = d.id);
+
+
+-- ============================================================
+-- 1.3 GESTIÓN DE VENTAS
+-- ============================================================
+
+DROP DATABASE IF EXISTS ventas;
+CREATE DATABASE ventas CHARACTER SET utf8mb4;
+USE ventas;
+
+CREATE TABLE cliente (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido1 VARCHAR(100) NOT NULL,
+    apellido2 VARCHAR(100),
+    ciudad VARCHAR(100),
+    categoria INT UNSIGNED
+);
+
+CREATE TABLE comercial (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido1 VARCHAR(100) NOT NULL,
+    apellido2 VARCHAR(100),
+    comision FLOAT
+);
+
+CREATE TABLE pedido (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    total DOUBLE NOT NULL,
+    fecha DATE,
+    id_cliente INT UNSIGNED NOT NULL,
+    id_comercial INT UNSIGNED NOT NULL,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id),
+    FOREIGN KEY (id_comercial) REFERENCES comercial(id)
+);
+
+INSERT INTO cliente VALUES
+(1,'Aarón','Rivero','Gómez','Almería',100),
+(2,'Adela','Salas','Díaz','Granada',200),
+(3,'Adolfo','Rubio','Flores','Sevilla',NULL),
+(4,'Adrián','Suárez',NULL,'Jaén',300),
+(5,'Marcos','Loyola','Méndez','Almería',200),
+(6,'María','Santana','Moreno','Cádiz',100),
+(7,'Pilar','Ruiz',NULL,'Sevilla',300),
+(8,'Pepe','Ruiz','Santana','Huelva',200),
+(9,'Guillermo','López','Gómez','Granada',225),
+(10,'Daniel','Santana','Loyola','Sevilla',125);
+
+INSERT INTO comercial VALUES
+(1,'Daniel','Sáez','Vega',0.15),
+(2,'Juan','Gómez','López',0.13),
+(3,'Diego','Flores','Salas',0.11),
+(4,'Marta','Herrera','Gil',0.14),
+(5,'Antonio','Carretero','Ortega',0.12),
+(6,'Alfonso','García','Santana',0.13),
+(7,'Pepe','Hernández','Martínez',0.11),
+(8,'Jorge','Pérez','López',0.08),
+(9,'María','López','Santana',0.08),
+(10,'Daniel','Martín','Gómez',0.05);
+
+-- Si se necesita el dataset completo de pedidos, importar los INSERT
+-- correspondientes del ejercicio original antes de ejecutar las consultas.
+
+-- 1.3.3.1
+SELECT * FROM pedido ORDER BY fecha DESC;
+
+-- 1.3.3.2
+SELECT * FROM pedido ORDER BY total DESC LIMIT 2;
+
+-- 1.3.3.3
+SELECT DISTINCT id_cliente FROM pedido;
+
+-- 1.3.3.4
+SELECT *
+FROM pedido
+WHERE YEAR(fecha) = 2017 AND total > 500;
+
+-- 1.3.3.5
+SELECT nombre, apellido1, apellido2
+FROM comercial
+WHERE comision BETWEEN 0.05 AND 0.11;
+
+-- 1.3.3.6
+SELECT MAX(comision) AS comision_maxima FROM comercial;
+
+-- 1.3.3.7
+SELECT id, nombre, apellido1
+FROM cliente
+WHERE apellido2 IS NOT NULL
+ORDER BY apellido1, apellido2, nombre;
+
+-- 1.3.3.8
+SELECT nombre
+FROM cliente
+WHERE (nombre LIKE 'A%n') OR nombre LIKE 'P%'
+ORDER BY nombre;
+
+-- 1.3.3.9
+SELECT nombre
+FROM cliente
+WHERE nombre NOT LIKE 'A%'
+ORDER BY nombre;
+
+-- 1.3.3.10
+SELECT DISTINCT nombre
+FROM comercial
+WHERE nombre LIKE '%el' OR nombre LIKE '%o';
+
+-- 1.3.4.1
+SELECT DISTINCT c.id, c.nombre, c.apellido1, c.apellido2
+FROM cliente c INNER JOIN pedido p ON c.id = p.id_cliente
+ORDER BY c.apellido1, c.apellido2, c.nombre;
+
+-- 1.3.4.2
+SELECT p.*, c.*
+FROM pedido p INNER JOIN cliente c ON p.id_cliente = c.id
+ORDER BY c.apellido1, c.apellido2, c.nombre;
+
+-- 1.3.4.3
+SELECT p.*, c.nombre AS comercial_nombre, c.apellido1, c.apellido2, c.comision
+FROM pedido p INNER JOIN comercial c ON p.id_comercial = c.id
+ORDER BY c.apellido1, c.apellido2, c.nombre;
+
+-- 1.3.4.4
+SELECT c.*, p.*, co.*
+FROM cliente c
+INNER JOIN pedido p ON c.id = p.id_cliente
+INNER JOIN comercial co ON p.id_comercial = co.id;
+
+-- 1.3.4.5
+SELECT DISTINCT c.*
+FROM cliente c INNER JOIN pedido p ON c.id = p.id_cliente
+WHERE YEAR(p.fecha) = 2017 AND p.total BETWEEN 300 AND 1000;
+
+-- 1.3.4.6
+SELECT DISTINCT co.nombre, co.apellido1, co.apellido2
+FROM comercial co
+INNER JOIN pedido p ON co.id = p.id_comercial
+INNER JOIN cliente c ON p.id_cliente = c.id
+WHERE c.nombre = 'María'
+AND c.apellido1 = 'Santana'
+AND c.apellido2 = 'Moreno';
+
+-- 1.3.4.7
+SELECT DISTINCT c.nombre
+FROM cliente c
+INNER JOIN pedido p ON c.id = p.id_cliente
+INNER JOIN comercial co ON p.id_comercial = co.id
+WHERE co.nombre = 'Daniel'
+AND co.apellido1 = 'Sáez'
+AND co.apellido2 = 'Vega';
+
+-- 1.3.5.1
+SELECT c.*, p.*
+FROM cliente c LEFT JOIN pedido p ON c.id = p.id_cliente
+ORDER BY c.apellido1, c.apellido2, c.nombre;
+
+-- 1.3.5.2
+SELECT co.*, p.*
+FROM comercial co LEFT JOIN pedido p ON co.id = p.id_comercial
+ORDER BY co.apellido1, co.apellido2, co.nombre;
+
+-- 1.3.5.3
+SELECT c.*
+FROM cliente c LEFT JOIN pedido p ON c.id = p.id_cliente
+WHERE p.id IS NULL;
+
+-- 1.3.5.4
+SELECT co.*
+FROM comercial co LEFT JOIN pedido p ON co.id = p.id_comercial
+WHERE p.id IS NULL;
+
+-- 1.3.5.5
+SELECT 'Cliente' AS tipo, c.nombre, c.apellido1, c.apellido2
+FROM cliente c LEFT JOIN pedido p ON c.id = p.id_cliente
+WHERE p.id IS NULL
+UNION
+SELECT 'Comercial' AS tipo, co.nombre, co.apellido1, co.apellido2
+FROM comercial co LEFT JOIN pedido p ON co.id = p.id_comercial
+WHERE p.id IS NULL
+ORDER BY apellido1, apellido2, nombre;
+
+-- 1.3.5.6
+-- No es recomendable usar NATURAL JOIN porque las columnas coincidentes
+-- pueden no representar la relación que se desea. Se debe indicar la
+-- condición de unión explícitamente.
+
+-- 1.3.6.1
+SELECT SUM(total) AS total_pedidos FROM pedido;
+
+-- 1.3.6.2
+SELECT AVG(total) AS media_pedidos FROM pedido;
+
+-- 1.3.6.3
+SELECT COUNT(DISTINCT id_comercial) AS comerciales_distintos FROM pedido;
+
+-- 1.3.6.4
+SELECT COUNT(*) AS total_clientes FROM cliente;
+
+-- 1.3.6.5
+SELECT MAX(total) AS pedido_maximo FROM pedido;
+
+-- 1.3.6.6
+SELECT MIN(total) AS pedido_minimo FROM pedido;
+
+-- 1.3.6.7
+SELECT ciudad, MAX(categoria) AS categoria_maxima
+FROM cliente
+GROUP BY ciudad;
+
+-- 1.3.6.8
+SELECT c.id, c.nombre, c.apellido1, c.apellido2, p.fecha, MAX(p.total) AS total_maximo
+FROM cliente c
+JOIN pedido p ON c.id = p.id_cliente
+GROUP BY c.id, c.nombre, c.apellido1, c.apellido2, p.fecha;
+
+-- 1.3.6.9
+SELECT c.id, c.nombre, c.apellido1, c.apellido2, p.fecha, MAX(p.total) AS total_maximo
+FROM cliente c
+JOIN pedido p ON c.id = p.id_cliente
+WHERE p.total > 2000
+GROUP BY c.id, c.nombre, c.apellido1, c.apellido2, p.fecha;
+
+-- 1.3.6.10
+SELECT co.id, co.nombre, co.apellido1, co.apellido2, MAX(p.total) AS total_maximo
+FROM comercial co
+JOIN pedido p ON co.id = p.id_comercial
+WHERE p.fecha = '2016-08-17'
+GROUP BY co.id, co.nombre, co.apellido1, co.apellido2;
+
+-- 1.3.6.11
+SELECT c.id, c.nombre, c.apellido1, c.apellido2, COUNT(p.id) AS total_pedidos
+FROM cliente c LEFT JOIN pedido p ON c.id = p.id_cliente
+GROUP BY c.id, c.nombre, c.apellido1, c.apellido2;
+
+-- 1.3.6.12
+SELECT c.id, c.nombre, c.apellido1, c.apellido2, COUNT(p.id) AS total_pedidos
+FROM cliente c LEFT JOIN pedido p ON c.id = p.id_cliente
+AND YEAR(p.fecha) = 2017
+GROUP BY c.id, c.nombre, c.apellido1, c.apellido2;
+
+-- 1.3.6.13
+SELECT c.id, c.nombre, c.apellido1, IFNULL(MAX(p.total),0) AS maximo_pedido
+FROM cliente c LEFT JOIN pedido p ON c.id = p.id_cliente
+GROUP BY c.id, c.nombre, c.apellido1;
+
+-- 1.3.6.14
+SELECT YEAR(fecha) AS anio, MAX(total) AS pedido_maximo
+FROM pedido
+GROUP BY YEAR(fecha)
+ORDER BY anio;
+
+-- 1.3.6.15
+SELECT YEAR(fecha) AS anio, COUNT(*) AS total_pedidos
+FROM pedido
+GROUP BY YEAR(fecha)
+ORDER BY anio;
+
+-- 1.3.7.1.1
+SELECT *
+FROM pedido
+WHERE id_cliente = (
+    SELECT id FROM cliente
+    WHERE nombre='Adela' AND apellido1='Salas' AND apellido2='Díaz'
+);
+
+-- 1.3.7.1.2
+SELECT COUNT(*)
+FROM pedido
+WHERE id_comercial = (
+    SELECT id FROM comercial
+    WHERE nombre='Daniel' AND apellido1='Sáez' AND apellido2='Vega'
+);
+
+-- 1.3.7.1.3
+SELECT *
+FROM cliente
+WHERE id = (
+    SELECT id_cliente
+    FROM pedido
+    WHERE YEAR(fecha)=2019
+    AND total = (SELECT MAX(total) FROM pedido WHERE YEAR(fecha)=2019)
+);
+
+-- 1.3.7.1.4
+SELECT fecha, total
+FROM pedido
+WHERE id_cliente = (
+    SELECT id FROM cliente
+    WHERE nombre='Pepe' AND apellido1='Ruiz' AND apellido2='Santana'
+)
+AND total = (
+    SELECT MIN(total)
+    FROM pedido
+    WHERE id_cliente = (
+        SELECT id FROM cliente
+        WHERE nombre='Pepe' AND apellido1='Ruiz' AND apellido2='Santana'
+    )
+);
+
+-- 1.3.7.1.5
+SELECT c.*, p.*
+FROM cliente c
+JOIN pedido p ON c.id = p.id_cliente
+WHERE YEAR(p.fecha)=2017
+AND p.total >= (
+    SELECT AVG(p2.total)
+    FROM pedido p2
+    WHERE YEAR(p2.fecha)=2017
+);
+
+-- 1.3.7.2.6
+SELECT *
+FROM pedido
+WHERE total >= ALL (SELECT total FROM pedido);
+
+-- 1.3.7.2.7
+SELECT *
+FROM cliente c
+WHERE c.id <> ALL (SELECT id_cliente FROM pedido);
+
+-- 1.3.7.2.8
+SELECT *
+FROM comercial c
+WHERE c.id <> ALL (SELECT id_comercial FROM pedido);
+
+-- 1.3.7.3.9
+SELECT *
+FROM cliente
+WHERE id NOT IN (SELECT id_cliente FROM pedido);
+
+-- 1.3.7.3.10
+SELECT *
+FROM comercial
+WHERE id NOT IN (SELECT id_comercial FROM pedido);
+
+-- 1.3.7.4.11
+SELECT c.*
+FROM cliente c
+WHERE NOT EXISTS (
+    SELECT 1 FROM pedido p WHERE p.id_cliente = c.id
+);
+
+-- 1.3.7.4.12
+SELECT c.*
+FROM comercial c
+WHERE NOT EXISTS (
+    SELECT 1 FROM pedido p WHERE p.id_comercial = c.id
+);
+
+
+-- ============================================================
+-- 1.4 JARDINERÍA
+-- ============================================================
+
+-- 1.4.2 BASE DE DATOS
+DROP DATABASE IF EXISTS jardineria;
+CREATE DATABASE jardineria CHARACTER SET utf8mb4;
+USE jardineria;
+
+CREATE TABLE oficina (
+    codigo_oficina VARCHAR(10) NOT NULL,
+    ciudad VARCHAR(30) NOT NULL,
+    pais VARCHAR(50) NOT NULL,
+    region VARCHAR(50) DEFAULT NULL,
+    codigo_postal VARCHAR(10) NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    linea_direccion1 VARCHAR(50) NOT NULL,
+    linea_direccion2 VARCHAR(50) DEFAULT NULL,
+    PRIMARY KEY (codigo_oficina)
+);
+
+CREATE TABLE empleado (
+    codigo_empleado INTEGER NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    apellido1 VARCHAR(50) NOT NULL,
+    apellido2 VARCHAR(50) DEFAULT NULL,
+    extension VARCHAR(10) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    codigo_oficina VARCHAR(10) NOT NULL,
+    codigo_jefe INTEGER DEFAULT NULL,
+    puesto VARCHAR(50) DEFAULT NULL,
+    PRIMARY KEY (codigo_empleado),
+    FOREIGN KEY (codigo_oficina) REFERENCES oficina(codigo_oficina),
+    FOREIGN KEY (codigo_jefe) REFERENCES empleado(codigo_empleado)
+);
+
+CREATE TABLE gama_producto (
+    gama VARCHAR(50) NOT NULL,
+    descripcion_texto TEXT,
+    descripcion_html TEXT,
+    imagen VARCHAR(256),
+    PRIMARY KEY (gama)
+);
+
+CREATE TABLE cliente (
+    codigo_cliente INTEGER NOT NULL,
+    nombre_cliente VARCHAR(50) NOT NULL,
+    nombre_contacto VARCHAR(30) DEFAULT NULL,
+    apellido_contacto VARCHAR(30) DEFAULT NULL,
+    telefono VARCHAR(15) NOT NULL,
+    fax VARCHAR(15) NOT NULL,
+    linea_direccion1 VARCHAR(50) NOT NULL,
+    linea_direccion2 VARCHAR(50) DEFAULT NULL,
+    ciudad VARCHAR(50) NOT NULL,
+    region VARCHAR(50) DEFAULT NULL,
+    pais VARCHAR(50) DEFAULT NULL,
+    codigo_postal VARCHAR(10) DEFAULT NULL,
+    codigo_empleado_rep_ventas INTEGER DEFAULT NULL,
+    limite_credito NUMERIC(15,2) DEFAULT NULL,
+    PRIMARY KEY (codigo_cliente),
+    FOREIGN KEY (codigo_empleado_rep_ventas) REFERENCES empleado(codigo_empleado)
+);
+
+CREATE TABLE pedido (
+    codigo_pedido INTEGER NOT NULL,
+    fecha_pedido DATE NOT NULL,
+    fecha_esperada DATE NOT NULL,
+    fecha_entrega DATE DEFAULT NULL,
+    estado VARCHAR(15) NOT NULL,
+    comentarios TEXT,
+    codigo_cliente INTEGER NOT NULL,
+    PRIMARY KEY (codigo_pedido),
+    FOREIGN KEY (codigo_cliente) REFERENCES cliente(codigo_cliente)
+);
+
+CREATE TABLE producto (
+    codigo_producto VARCHAR(15) NOT NULL,
+    nombre VARCHAR(70) NOT NULL,
+    gama VARCHAR(50) NOT NULL,
+    dimensiones VARCHAR(25) NULL,
+    proveedor VARCHAR(50) DEFAULT NULL,
+    descripcion TEXT NULL,
+    cantidad_en_stock SMALLINT NOT NULL,
+    precio_venta NUMERIC(15,2) NOT NULL,
+    precio_proveedor NUMERIC(15,2) DEFAULT NULL,
+    PRIMARY KEY (codigo_producto),
+    FOREIGN KEY (gama) REFERENCES gama_producto(gama)
+);
+
+CREATE TABLE detalle_pedido (
+    codigo_pedido INTEGER NOT NULL,
+    codigo_producto VARCHAR(15) NOT NULL,
+    cantidad INTEGER NOT NULL,
+    precio_unidad NUMERIC(15,2) NOT NULL,
+    numero_linea SMALLINT NOT NULL,
+    PRIMARY KEY (codigo_pedido, codigo_producto),
+    FOREIGN KEY (codigo_pedido) REFERENCES pedido(codigo_pedido),
+    FOREIGN KEY (codigo_producto) REFERENCES producto(codigo_producto)
+);
+
+CREATE TABLE pago (
+    codigo_cliente INTEGER NOT NULL,
+    forma_pago VARCHAR(40) NOT NULL,
+    id_transaccion VARCHAR(50) NOT NULL,
+    fecha_pago DATE NOT NULL,
+    total NUMERIC(15,2) NOT NULL,
+    PRIMARY KEY (codigo_cliente, id_transaccion),
+    FOREIGN KEY (codigo_cliente) REFERENCES cliente(codigo_cliente)
+);
+
+-- 1.4.3 DATOS:
+-- Importar el archivo jardineria.sql de la fuente antes de ejecutar
+-- las consultas de esta sección.
+
+-- 1.4.4.1
+SELECT codigo_oficina, ciudad FROM oficina;
+
+-- 1.4.4.2
+SELECT ciudad, telefono
+FROM oficina
+WHERE pais = 'España';
+
+-- 1.4.4.3
+SELECT nombre, apellido1, apellido2, email
+FROM empleado
+WHERE codigo_jefe = 7;
+
+-- 1.4.4.4
+SELECT puesto, nombre, apellido1, apellido2, email
+FROM empleado
+WHERE codigo_jefe IS NULL;
+
+-- 1.4.4.5
+SELECT nombre, apellido1, apellido2, puesto
+FROM empleado
+WHERE puesto <> 'Representante Ventas';
+
+-- 1.4.4.6
+SELECT nombre_cliente
+FROM cliente
+WHERE pais = 'Spain' OR pais = 'España';
+
+-- 1.4.4.7
+SELECT DISTINCT estado FROM pedido;
+
+-- 1.4.4.8a
+SELECT DISTINCT codigo_cliente
+FROM pago
+WHERE YEAR(fecha_pago) = 2008;
+
+-- 1.4.4.8b
+SELECT DISTINCT codigo_cliente
+FROM pago
+WHERE DATE_FORMAT(fecha_pago,'%Y') = '2008';
+
+-- 1.4.4.8c
+SELECT DISTINCT codigo_cliente
+FROM pago
+WHERE fecha_pago >= '2008-01-01' AND fecha_pago < '2009-01-01';
+
+-- 1.4.4.9
+SELECT codigo_pedido, codigo_cliente, fecha_esperada, fecha_entrega
+FROM pedido
+WHERE fecha_entrega IS NULL OR fecha_entrega > fecha_esperada;
+
+-- 1.4.4.10a
+SELECT codigo_pedido, codigo_cliente, fecha_esperada, fecha_entrega
+FROM pedido
+WHERE fecha_entrega <= ADDDATE(fecha_esperada, INTERVAL -2 DAY);
+
+-- 1.4.4.10b
+SELECT codigo_pedido, codigo_cliente, fecha_esperada, fecha_entrega
+FROM pedido
+WHERE DATEDIFF(fecha_esperada, fecha_entrega) >= 2;
+
+-- 1.4.4.10c
+-- No es recomendable usar + o - directamente con DATE en MySQL.
+-- Se deben usar funciones de fecha como ADDDATE o DATEDIFF.
+
+-- 1.4.4.11
+SELECT *
+FROM pedido
+WHERE estado = 'Rechazado'
+AND YEAR(fecha_pedido) = 2009;
+
+-- 1.4.4.12
+SELECT *
+FROM pedido
+WHERE MONTH(fecha_entrega) = 1;
+
+-- 1.4.4.13
+SELECT *
+FROM pago
+WHERE YEAR(fecha_pago)=2008 AND forma_pago='PayPal'
+ORDER BY total DESC;
+
+-- 1.4.4.14
+SELECT DISTINCT forma_pago FROM pago;
+
+-- 1.4.4.15
+SELECT *
+FROM producto
+WHERE gama='Ornamentales' AND cantidad_en_stock > 100
+ORDER BY precio_venta DESC;
+
+-- 1.4.4.16
+SELECT *
+FROM cliente
+WHERE ciudad='Madrid'
+AND codigo_empleado_rep_ventas IN (11,30);
+
+-- 1.4.5.1
+SELECT c.nombre_cliente, e.nombre, e.apellido1
+FROM cliente c
+INNER JOIN empleado e ON c.codigo_empleado_rep_ventas=e.codigo_empleado;
+
+-- 1.4.5.2
+SELECT DISTINCT c.nombre_cliente, e.nombre, e.apellido1
+FROM cliente c
+INNER JOIN empleado e ON c.codigo_empleado_rep_ventas=e.codigo_empleado
+INNER JOIN pago p ON c.codigo_cliente=p.codigo_cliente;
+
+-- 1.4.5.3
+SELECT c.nombre_cliente, e.nombre, e.apellido1
+FROM cliente c
+INNER JOIN empleado e ON c.codigo_empleado_rep_ventas=e.codigo_empleado
+WHERE NOT EXISTS (
+    SELECT 1 FROM pago p WHERE p.codigo_cliente=c.codigo_cliente
+);
+
+-- 1.4.5.4
+SELECT DISTINCT c.nombre_cliente, e.nombre, e.apellido1, o.ciudad
+FROM cliente c
+INNER JOIN empleado e ON c.codigo_empleado_rep_ventas=e.codigo_empleado
+INNER JOIN oficina o ON e.codigo_oficina=o.codigo_oficina
+INNER JOIN pago p ON c.codigo_cliente=p.codigo_cliente;
+
+-- 1.4.5.5
+SELECT DISTINCT c.nombre_cliente, e.nombre, e.apellido1, o.ciudad
+FROM cliente c
+INNER JOIN empleado e ON c.codigo_empleado_rep_ventas=e.codigo_empleado
+INNER JOIN oficina o ON e.codigo_oficina=o.codigo_oficina
+WHERE NOT EXISTS (
+    SELECT 1 FROM pago p WHERE p.codigo_cliente=c.codigo_cliente
+);
+
+-- 1.4.5.6
+SELECT DISTINCT o.linea_direccion1, o.linea_direccion2
+FROM oficina o
+INNER JOIN empleado e ON o.codigo_oficina=e.codigo_oficina
+INNER JOIN cliente c ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+WHERE c.ciudad='Fuenlabrada';
+
+-- 1.4.5.7
+SELECT c.nombre_cliente, e.nombre, e.apellido1, o.ciudad
+FROM cliente c
+INNER JOIN empleado e ON c.codigo_empleado_rep_ventas=e.codigo_empleado
+INNER JOIN oficina o ON e.codigo_oficina=o.codigo_oficina;
+
+-- 1.4.5.8
+SELECT e.nombre, e.apellido1, j.nombre AS jefe_nombre, j.apellido1 AS jefe_apellido1
+FROM empleado e
+LEFT JOIN empleado j ON e.codigo_jefe=j.codigo_empleado;
+
+-- 1.4.5.9
+SELECT e.nombre AS empleado,
+       CONCAT(j.nombre,' ',j.apellido1) AS jefe,
+       CONCAT(jj.nombre,' ',jj.apellido1) AS jefe_del_jefe
+FROM empleado e
+LEFT JOIN empleado j ON e.codigo_jefe=j.codigo_empleado
+LEFT JOIN empleado jj ON j.codigo_jefe=jj.codigo_empleado;
+
+-- 1.4.5.10
+SELECT DISTINCT c.nombre_cliente
+FROM cliente c
+JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+WHERE p.fecha_entrega IS NULL OR p.fecha_entrega > p.fecha_esperada;
+
+-- 1.4.5.11
+SELECT DISTINCT c.nombre_cliente, gp.gama
+FROM cliente c
+JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+JOIN detalle_pedido dp ON p.codigo_pedido=dp.codigo_pedido
+JOIN producto pr ON dp.codigo_producto=pr.codigo_producto
+JOIN gama_producto gp ON pr.gama=gp.gama
+ORDER BY c.nombre_cliente, gp.gama;
+
+-- 1.4.6.1
+SELECT c.*
+FROM cliente c LEFT JOIN pago p ON c.codigo_cliente=p.codigo_cliente
+WHERE p.codigo_cliente IS NULL;
+
+-- 1.4.6.2
+SELECT c.*
+FROM cliente c LEFT JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+WHERE p.codigo_cliente IS NULL;
+
+-- 1.4.6.3
+SELECT c.codigo_cliente, c.nombre_cliente,
+       CASE
+         WHEN p.codigo_cliente IS NULL AND pa.codigo_cliente IS NULL THEN 'Sin pagos y sin pedidos'
+         WHEN p.codigo_cliente IS NULL THEN 'Sin pedidos'
+         WHEN pa.codigo_cliente IS NULL THEN 'Sin pagos'
+       END AS situacion
+FROM cliente c
+LEFT JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+LEFT JOIN pago pa ON c.codigo_cliente=pa.codigo_cliente
+WHERE p.codigo_cliente IS NULL OR pa.codigo_cliente IS NULL;
+
+-- 1.4.6.4
+SELECT e.*
+FROM empleado e LEFT JOIN oficina o ON e.codigo_oficina=o.codigo_oficina
+WHERE o.codigo_oficina IS NULL;
+
+-- 1.4.6.5
+SELECT e.*
+FROM empleado e LEFT JOIN cliente c
+ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+WHERE c.codigo_cliente IS NULL;
+
+-- 1.4.6.6
+SELECT e.*, o.*
+FROM empleado e
+LEFT JOIN cliente c ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+LEFT JOIN oficina o ON e.codigo_oficina=o.codigo_oficina
+WHERE c.codigo_cliente IS NULL;
+
+-- 1.4.6.7
+SELECT e.codigo_empleado, e.nombre, e.apellido1, e.codigo_oficina,
+       CASE WHEN e.codigo_oficina IS NULL THEN 'Sin oficina' ELSE 'Tiene oficina' END AS oficina_estado,
+       CASE WHEN c.codigo_cliente IS NULL THEN 'Sin cliente' ELSE 'Tiene cliente' END AS cliente_estado
+FROM empleado e
+LEFT JOIN cliente c ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+WHERE e.codigo_oficina IS NULL OR c.codigo_cliente IS NULL;
+
+-- 1.4.6.8
+SELECT pr.*
+FROM producto pr LEFT JOIN detalle_pedido dp
+ON pr.codigo_producto=dp.codigo_producto
+WHERE dp.codigo_producto IS NULL;
+
+-- 1.4.6.9
+SELECT pr.nombre, gp.descripcion_texto, gp.imagen
+FROM producto pr
+JOIN gama_producto gp ON pr.gama=gp.gama
+LEFT JOIN detalle_pedido dp ON pr.codigo_producto=dp.codigo_producto
+WHERE dp.codigo_producto IS NULL;
+
+-- 1.4.6.10
+SELECT o.*
+FROM oficina o
+WHERE o.codigo_oficina NOT IN (
+    SELECT DISTINCT e.codigo_oficina
+    FROM empleado e
+    JOIN cliente c ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+    JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+    JOIN detalle_pedido dp ON p.codigo_pedido=dp.codigo_pedido
+    JOIN producto pr ON dp.codigo_producto=pr.codigo_producto
+    WHERE pr.gama='Frutales'
+);
+
+-- 1.4.6.11
+SELECT DISTINCT c.*
+FROM cliente c
+JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+LEFT JOIN pago pa ON c.codigo_cliente=pa.codigo_cliente
+WHERE pa.codigo_cliente IS NULL;
+
+-- 1.4.6.12
+SELECT e.*, j.nombre AS jefe_nombre, j.apellido1 AS jefe_apellido1
+FROM empleado e
+LEFT JOIN cliente c ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+LEFT JOIN empleado j ON e.codigo_jefe=j.codigo_empleado
+WHERE c.codigo_cliente IS NULL;
+
+-- 1.4.7.1
+SELECT COUNT(*) AS total_empleados FROM empleado;
+
+-- 1.4.7.2
+SELECT pais, COUNT(*) AS total_clientes
+FROM cliente
+GROUP BY pais;
+
+-- 1.4.7.3
+SELECT AVG(total) AS pago_medio_2009
+FROM pago
+WHERE YEAR(fecha_pago)=2009;
+
+-- 1.4.7.4
+SELECT estado, COUNT(*) AS total_pedidos
+FROM pedido
+GROUP BY estado
+ORDER BY total_pedidos DESC;
+
+-- 1.4.7.5
+SELECT MAX(precio_venta) AS precio_maximo,
+       MIN(precio_venta) AS precio_minimo
+FROM producto;
+
+-- 1.4.7.6
+SELECT COUNT(*) AS total_clientes FROM cliente;
+
+-- 1.4.7.7
+SELECT COUNT(*) AS clientes_madrid
+FROM cliente
+WHERE ciudad='Madrid';
+
+-- 1.4.7.8
+SELECT ciudad, COUNT(*) AS total_clientes
+FROM cliente
+WHERE ciudad LIKE 'M%'
+GROUP BY ciudad;
+
+-- 1.4.7.9
+SELECT e.nombre, e.apellido1, COUNT(c.codigo_cliente) AS total_clientes
+FROM empleado e
+JOIN cliente c ON e.codigo_empleado=c.codigo_empleado_rep_ventas
+GROUP BY e.codigo_empleado, e.nombre, e.apellido1;
+
+-- 1.4.7.10
+SELECT COUNT(*) AS clientes_sin_representante
+FROM cliente
+WHERE codigo_empleado_rep_ventas IS NULL;
+
+-- 1.4.7.11
+SELECT c.nombre_cliente, c.nombre_contacto, c.apellido_contacto,
+       MIN(p.fecha_pago) AS primer_pago,
+       MAX(p.fecha_pago) AS ultimo_pago
+FROM cliente c
+LEFT JOIN pago p ON c.codigo_cliente=p.codigo_cliente
+GROUP BY c.codigo_cliente, c.nombre_cliente, c.nombre_contacto, c.apellido_contacto;
+
+-- 1.4.7.12
+SELECT codigo_pedido, COUNT(DISTINCT codigo_producto) AS productos_diferentes
+FROM detalle_pedido
+GROUP BY codigo_pedido;
+
+-- 1.4.7.13
+SELECT codigo_pedido, SUM(cantidad) AS unidades_totales
+FROM detalle_pedido
+GROUP BY codigo_pedido;
+
+-- 1.4.7.14
+SELECT pr.codigo_producto, pr.nombre, SUM(dp.cantidad) AS unidades_vendidas
+FROM producto pr
+JOIN detalle_pedido dp ON pr.codigo_producto=dp.codigo_producto
+GROUP BY pr.codigo_producto, pr.nombre
+ORDER BY unidades_vendidas DESC
+LIMIT 20;
+
+-- 1.4.7.15
+SELECT
+    SUM(precio_unidad*cantidad) AS base_imponible,
+    SUM(precio_unidad*cantidad)*0.21 AS IVA,
+    SUM(precio_unidad*cantidad)*1.21 AS total_facturado
+FROM detalle_pedido;
+
+-- 1.4.7.16
+SELECT codigo_producto,
+       SUM(precio_unidad*cantidad) AS base_imponible,
+       SUM(precio_unidad*cantidad)*0.21 AS IVA,
+       SUM(precio_unidad*cantidad)*1.21 AS total_facturado
+FROM detalle_pedido
+GROUP BY codigo_producto;
+
+-- 1.4.7.17
+SELECT codigo_producto,
+       SUM(precio_unidad*cantidad) AS base_imponible,
+       SUM(precio_unidad*cantidad)*0.21 AS IVA,
+       SUM(precio_unidad*cantidad)*1.21 AS total_facturado
+FROM detalle_pedido
+WHERE codigo_producto LIKE 'OR%'
+GROUP BY codigo_producto;
+
+-- 1.4.7.18
+SELECT pr.nombre,
+       SUM(dp.cantidad) AS unidades_vendidas,
+       SUM(dp.precio_unidad*dp.cantidad) AS total_facturado,
+       SUM(dp.precio_unidad*dp.cantidad)*1.21 AS total_con_iva
+FROM producto pr
+JOIN detalle_pedido dp ON pr.codigo_producto=dp.codigo_producto
+GROUP BY pr.codigo_producto, pr.nombre
+HAVING total_facturado > 3000
+ORDER BY total_facturado DESC;
+
+-- 1.4.7.19
+SELECT YEAR(fecha_pago) AS anio, SUM(total) AS total_pagado
+FROM pago
+GROUP BY YEAR(fecha_pago)
+ORDER BY anio;
+
+-- 1.4.8.1.1
+SELECT nombre_cliente
+FROM cliente
+WHERE limite_credito=(SELECT MAX(limite_credito) FROM cliente);
+
+-- 1.4.8.1.2
+SELECT nombre
+FROM producto
+WHERE precio_venta=(SELECT MAX(precio_venta) FROM producto);
+
+-- 1.4.8.1.3
+SELECT nombre
+FROM producto
+WHERE codigo_producto=(
+    SELECT codigo_producto
+    FROM detalle_pedido
+    GROUP BY codigo_producto
+    ORDER BY SUM(cantidad) DESC
+    LIMIT 1
+);
+
+-- 1.4.8.1.4
+SELECT *
+FROM cliente c
+WHERE c.limite_credito > (
+    SELECT IFNULL(SUM(p.total),0)
+    FROM pago p
+    WHERE p.codigo_cliente=c.codigo_cliente
+);
+
+-- 1.4.8.1.5
+SELECT nombre
+FROM producto
+WHERE cantidad_en_stock=(SELECT MAX(cantidad_en_stock) FROM producto);
+
+-- 1.4.8.1.6
+SELECT nombre
+FROM producto
+WHERE cantidad_en_stock=(SELECT MIN(cantidad_en_stock) FROM producto);
+
+-- 1.4.8.1.7
+SELECT nombre, apellido1, apellido2, email
+FROM empleado
+WHERE codigo_jefe=(
+    SELECT codigo_empleado
+    FROM empleado
+    WHERE nombre='Alberto' AND apellido1='Soria'
+);
+
+-- 1.4.8.2.8
+SELECT nombre_cliente
+FROM cliente
+WHERE limite_credito >= ALL (SELECT limite_credito FROM cliente);
+
+-- 1.4.8.2.9
+SELECT nombre
+FROM producto
+WHERE precio_venta >= ALL (SELECT precio_venta FROM producto);
+
+-- 1.4.8.2.10
+SELECT nombre
+FROM producto
+WHERE cantidad_en_stock <= ALL (SELECT cantidad_en_stock FROM producto);
+
+-- 1.4.8.3.11
+SELECT nombre, apellido1, puesto
+FROM empleado
+WHERE codigo_empleado NOT IN (
+    SELECT codigo_empleado_rep_ventas
+    FROM cliente
+    WHERE codigo_empleado_rep_ventas IS NOT NULL
+);
+
+-- 1.4.8.3.12
+SELECT *
+FROM cliente
+WHERE codigo_cliente NOT IN (SELECT codigo_cliente FROM pago);
+
+-- 1.4.8.3.13
+SELECT *
+FROM cliente
+WHERE codigo_cliente IN (SELECT codigo_cliente FROM pago);
+
+-- 1.4.8.3.14
+SELECT *
+FROM producto
+WHERE codigo_producto NOT IN (SELECT codigo_producto FROM detalle_pedido);
+
+-- 1.4.8.3.15
+SELECT e.nombre, e.apellido1, e.apellido2, e.puesto, o.telefono
+FROM empleado e
+JOIN oficina o ON e.codigo_oficina=o.codigo_oficina
+WHERE e.codigo_empleado NOT IN (
+    SELECT codigo_empleado_rep_ventas
+    FROM cliente
+    WHERE codigo_empleado_rep_ventas IS NOT NULL
+);
+
+-- 1.4.8.3.16
+SELECT *
+FROM oficina
+WHERE codigo_oficina NOT IN (
+    SELECT DISTINCT e.codigo_oficina
+    FROM empleado e
+    WHERE e.codigo_empleado IN (
+        SELECT c.codigo_empleado_rep_ventas
+        FROM cliente c
+        WHERE c.codigo_cliente IN (
+            SELECT p.codigo_cliente
+            FROM pedido p
+            WHERE p.codigo_pedido IN (
+                SELECT dp.codigo_pedido
+                FROM detalle_pedido dp
+                WHERE dp.codigo_producto IN (
+                    SELECT pr.codigo_producto
+                    FROM producto pr
+                    WHERE pr.gama='Frutales'
+                )
+            )
+        )
+    )
+);
+
+-- 1.4.8.3.17
+SELECT DISTINCT c.*
+FROM cliente c
+JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+WHERE c.codigo_cliente NOT IN (SELECT codigo_cliente FROM pago);
+
+-- 1.4.8.4.18
+SELECT c.*
+FROM cliente c
+WHERE NOT EXISTS (
+    SELECT 1 FROM pago p WHERE p.codigo_cliente=c.codigo_cliente
+);
+
+-- 1.4.8.4.19
+SELECT c.*
+FROM cliente c
+WHERE EXISTS (
+    SELECT 1 FROM pago p WHERE p.codigo_cliente=c.codigo_cliente
+);
+
+-- 1.4.8.4.20
+SELECT pr.*
+FROM producto pr
+WHERE NOT EXISTS (
+    SELECT 1 FROM detalle_pedido dp
+    WHERE dp.codigo_producto=pr.codigo_producto
+);
+
+-- 1.4.8.4.21
+SELECT pr.*
+FROM producto pr
+WHERE EXISTS (
+    SELECT 1 FROM detalle_pedido dp
+    WHERE dp.codigo_producto=pr.codigo_producto
+);
+
+-- 1.4.8.5
+-- En la versión actual de la página, este apartado aparece sin enunciados
+-- numerados. Por ello no se añade una consulta inventada.
+
+-- 1.4.9.1
+SELECT c.nombre_cliente, COUNT(p.codigo_pedido) AS total_pedidos
+FROM cliente c
+LEFT JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+GROUP BY c.codigo_cliente, c.nombre_cliente;
+
+-- 1.4.9.2
+SELECT c.nombre_cliente, IFNULL(SUM(p.total),0) AS total_pagado
+FROM cliente c
+LEFT JOIN pago p ON c.codigo_cliente=p.codigo_cliente
+GROUP BY c.codigo_cliente, c.nombre_cliente;
+
+-- 1.4.9.3
+SELECT DISTINCT c.nombre_cliente
+FROM cliente c
+JOIN pedido p ON c.codigo_cliente=p.codigo_cliente
+WHERE YEAR(p.fecha_pedido)=2008
+ORDER BY c.nombre_cliente;
+
+-- 1.4.9.4
+SELECT c.nombre_cliente, e.nombre, e.apellido1, o.telefono
+FROM cliente c
+JOIN empleado e ON c.codigo_empleado_rep_ventas=e.codigo_empleado
+JOIN oficina o ON e.codigo_oficina=o.codigo_oficina
+WHERE NOT EXISTS (
+    SELECT 1 FROM pago p WHERE p.codigo_cliente=c.codigo_cliente
+);
+
+-- 1.4.9.5
+SELECT c.nombre_cliente, e.nombre, e.apellido1, o.ciudad
+FROM cliente c
+LEFT JOIN empleado e ON c.codigo_empleado_rep_ventas=e.codigo_empleado
+LEFT JOIN oficina o ON e.codigo_oficina=o.codigo_oficina;
+
+-- 1.4.9.6
+SELECT e.nombre, e.apellido1, e.apellido2, e.puesto, o.telefono
+FROM empleado e
+JOIN oficina o ON e.codigo_oficina=o.codigo_oficina
+WHERE e.codigo_empleado NOT IN (
+    SELECT codigo_empleado_rep_ventas
+    FROM cliente
+    WHERE codigo_empleado_rep_ventas IS NOT NULL
+);
+
+-- 1.4.9.7
+SELECT o.ciudad, COUNT(e.codigo_empleado) AS total_empleados
+FROM oficina o
+LEFT JOIN empleado e ON o.codigo_oficina=e.codigo_oficina
+GROUP BY o.codigo_oficina, o.ciudad
+ORDER BY o.ciudad;

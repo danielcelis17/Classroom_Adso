@@ -1,0 +1,226 @@
+Daniel Steven Celis Paredes
+Script, Base de Datos y Sentencias DML
+
+-- ============================================================
+-- PROYECTO: DELIWEB
+-- ECOMMERCE DE PASTELERÍA Y REPOSTERÍA
+-- Evidencia: Script Base de Datos y Sentencias DML
+-- ============================================================
+
+DROP DATABASE IF EXISTS deliweb;
+
+CREATE DATABASE deliweb
+CHARACTER SET utf8mb4
+COLLATE utf8mb4_unicode_ci;
+
+USE deliweb;
+
+-- ============================================================
+-- TABLA: ROLES
+-- ============================================================
+
+CREATE TABLE roles (
+    id_rol INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- ============================================================
+-- TABLA: USUARIOS
+-- ============================================================
+
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    correo VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    telefono VARCHAR(20),
+    direccion VARCHAR(200),
+    id_rol INT NOT NULL,
+    estado BOOLEAN DEFAULT TRUE,
+
+    FOREIGN KEY (id_rol)
+        REFERENCES roles(id_rol)
+);
+
+-- ============================================================
+-- TABLA: CATEGORIAS
+-- ============================================================
+
+CREATE TABLE categorias (
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255),
+    estado BOOLEAN DEFAULT TRUE
+);
+
+-- ============================================================
+-- TABLA: PRODUCTOS
+-- ============================================================
+
+CREATE TABLE productos (
+    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    precio DECIMAL(10,2) NOT NULL,
+    stock INT NOT NULL DEFAULT 0,
+    imagen VARCHAR(255),
+    id_categoria INT NOT NULL,
+    estado BOOLEAN DEFAULT TRUE,
+
+    FOREIGN KEY (id_categoria)
+        REFERENCES categorias(id_categoria)
+);
+
+-- ============================================================
+-- INSERTAR ROLES
+-- ============================================================
+
+INSERT INTO roles (nombre) VALUES
+('Administrador'),
+('Cliente');
+
+-- ============================================================
+-- INSERTAR CATEGORIAS
+-- ============================================================
+
+INSERT INTO categorias (nombre, descripcion) VALUES
+('Tortas', 'Tortas de diferentes sabores y tamaños'),
+('Cupcakes', 'Cupcakes decorados de diferentes sabores'),
+('Postres', 'Postres individuales y familiares'),
+('Galletas', 'Galletas artesanales y decoradas'),
+('Repostería', 'Productos especiales de repostería');
+
+-- ============================================================
+-- INSERTAR USUARIOS
+-- ============================================================
+
+INSERT INTO usuarios
+(nombre, correo, password, telefono, direccion, id_rol)
+VALUES
+('Administrador DELIWEB', 'admin@deliweb.com', '123456', '3001234567',
+ 'Floridablanca, Santander', 1),
+
+('Juan Pérez', 'juan@gmail.com', '123456', '3011234567',
+ 'Bucaramanga, Santander', 2),
+
+('María Gómez', 'maria@gmail.com', '123456', '3021234567',
+ 'Girón, Santander', 2);
+
+-- ============================================================
+-- INSERTAR PRODUCTOS
+-- ============================================================
+
+INSERT INTO productos
+(nombre, descripcion, precio, stock, imagen, id_categoria)
+VALUES
+('Torta de Chocolate',
+ 'Deliciosa torta de chocolate con cobertura especial',
+ 45000, 10, 'torta_chocolate.jpg', 1),
+
+('Torta Red Velvet',
+ 'Torta red velvet con crema de queso',
+ 55000, 8, 'red_velvet.jpg', 1),
+
+('Cupcake de Vainilla',
+ 'Cupcake de vainilla decorado',
+ 8000, 20, 'cupcake_vainilla.jpg', 2),
+
+('Cheesecake de Fresa',
+ 'Cheesecake con salsa de fresa',
+ 18000, 12, 'cheesecake_fresa.jpg', 3),
+
+('Galletas Decoradas',
+ 'Galletas artesanales decoradas',
+ 6000, 30, 'galletas.jpg', 4);
+
+
+-- ============================================================
+-- SENTENCIAS DML
+-- ============================================================
+
+-- CONSULTAR TODOS LOS PRODUCTOS
+
+SELECT * FROM productos;
+
+-- CONSULTAR PRODUCTOS DISPONIBLES
+
+SELECT
+    id_producto,
+    nombre,
+    precio,
+    stock
+FROM productos
+WHERE estado = TRUE;
+
+-- BUSCAR PRODUCTOS DE MÁS DE $10.000
+
+SELECT
+    nombre,
+    precio
+FROM productos
+WHERE precio > 10000;
+
+-- ACTUALIZAR EL PRECIO DE UN PRODUCTO
+
+UPDATE productos
+SET precio = 47000
+WHERE id_producto = 1;
+
+-- ACTUALIZAR EL STOCK
+
+UPDATE productos
+SET stock = stock + 10
+WHERE id_producto = 1;
+
+-- ELIMINAR UN PRODUCTO
+
+DELETE FROM productos
+WHERE id_producto = 5;
+
+
+-- ============================================================
+-- CONSULTA DE PRODUCTOS CON SU CATEGORIA
+-- ============================================================
+
+SELECT
+    p.id_producto,
+    p.nombre AS producto,
+    c.nombre AS categoria,
+    p.precio,
+    p.stock
+FROM productos p
+INNER JOIN categorias c
+    ON p.id_categoria = c.id_categoria;
+
+-- ============================================================
+-- PRODUCTOS DE LA CATEGORIA TORTAS
+-- ============================================================
+
+SELECT
+    p.nombre,
+    p.precio,
+    c.nombre AS categoria
+FROM productos p
+INNER JOIN categorias c
+    ON p.id_categoria = c.id_categoria
+WHERE c.nombre = 'Tortas';
+
+-- ============================================================
+-- PRODUCTOS ORDENADOS DEL MÁS BARATO AL MÁS CARO
+-- ============================================================
+
+SELECT
+    nombre,
+    precio
+FROM productos
+ORDER BY precio ASC;
+
+-- ============================================================
+-- PRODUCTOS ORDENADOS DEL MÁS CARO AL MÁS BARATO
+-- ============================================================
+
+SELECT
+    nombre,
+    precio
+FROM productos
+ORDER BY precio DESC;

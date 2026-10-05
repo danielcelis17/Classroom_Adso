@@ -1,0 +1,442 @@
+Ejercicio 1: Gestión de Vehículos
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+// Clase Entidad
+class Vehiculo {
+    private String placa;
+    private int modelo;
+    private String tipo; // Sedan, SUV, 4x4
+    private String marca;
+
+    public Vehiculo(String placa, int modelo, String tipo, String marca) {
+        this.placa = placa;
+        this.modelo = modelo;
+        this.tipo = tipo;
+        this.marca = marca;
+    }
+
+    public String getPlaca() { return placa; }
+    public int getModelo() { return modelo; }
+    public String getTipo() { return tipo; }
+    public String getMarca() { return marca; }
+
+    @Override
+    public String toString() {
+        return "Placa: " + placa + " | Modelo (Año): " + modelo + " | Tipo: " + tipo + " | Marca: " + marca;
+    }
+}
+
+// Clase Principal
+public class GestionVehiculos {
+    private static ArrayList<Vehiculo> listaVehiculos = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        int opcion = 0;
+        do {
+            System.out.println("\n========================================");
+            System.out.println("   SISTEMA DE GESTIÓN DE VEHÍCULOS");
+            System.out.println("========================================");
+            System.out.println("1. Registrar nuevo vehículo");
+            System.out.println("2. Mostrar todos los vehículos");
+            System.out.println("3. Buscar vehículo por Placa");
+            System.out.println("4. Salir");
+            System.out.print("Ingrese una opción: ");
+
+            if (scanner.hasNextInt()) {
+                opcion = scanner.nextInt();
+                scanner.nextLine(); // Limpiar búfer
+            } else {
+                System.out.println("¡Error! Ingrese un número válido.");
+                scanner.nextLine();
+                continue;
+            }
+
+            switch (opcion) {
+                case 1:
+                    registrarVehiculo();
+                    break;
+                case 2:
+                    mostrarVehiculos();
+                    break;
+                case 3:
+                    buscarPorPlaca();
+                    break;
+                case 4:
+                    System.out.println("Saliendo del programa...");
+                    break;
+                default:
+                    System.out.println("Opción no válida. Intente de nuevo.");
+            }
+        } while (opcion != 4);
+    }
+
+    private static void registrarVehiculo() {
+        System.out.println("\n--- REGISTRO DE VEHÍCULO ---");
+        System.out.print("Ingrese la Placa: ");
+        String placa = scanner.nextLine().toUpperCase();
+
+        System.out.print("Ingrese el Modelo (Año, ej. 2024): ");
+        int modelo = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Ingrese el Tipo (Sedan, SUV, 4x4): ");
+        String tipo = scanner.nextLine();
+
+        System.out.print("Ingrese la Marca: ");
+        String marca = scanner.nextLine();
+
+        listaVehiculos.add(new Vehiculo(placa, modelo, tipo, marca));
+        System.out.println("✔ Vehículo registrado correctamente.");
+    }
+
+    private static void mostrarVehiculos() {
+        System.out.println("\n--- LISTA DE VEHÍCULOS REGISTRADOS ---");
+        if (listaVehiculos.isEmpty()) {
+            System.out.println("No hay vehículos registrados en el sistema.");
+        } else {
+            for (int i = 0; i < listaVehiculos.size(); i++) {
+                System.out.println((i + 1) + ". " + listaVehiculos.get(i));
+            }
+        }
+    }
+
+    private static void buscarPorPlaca() {
+        System.out.println("\n--- BÚSQUEDA POR PLACA ---");
+        if (listaVehiculos.isEmpty()) {
+            System.out.println("No hay vehículos registrados para buscar.");
+            return;
+        }
+
+        System.out.print("Ingrese la placa a buscar: ");
+        String placaBusqueda = scanner.nextLine().toUpperCase();
+        boolean encontrado = false;
+
+        for (Vehiculo v : listaVehiculos) {
+            if (v.getPlaca().equalsIgnoreCase(placaBusqueda)) {
+                System.out.println("\n¡Vehículo Encontrado!");
+                System.out.println(v);
+                encontrado = true;
+                break;
+            }
+        }
+
+        if (!encontrado) {
+            System.out.println("❌ No se encontró ningún vehículo con la placa: " + placaBusqueda);
+        }
+    }
+}
+
+Ejercicio 2: Gestión de Libros
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Scanner;
+
+// Clase Entidad
+class Libro {
+    private String titulo;
+    private int mesEdicion; // 1 a 12
+    private int anioEdicion;
+
+    public Libro(String titulo, int mesEdicion, int anioEdicion) {
+        this.titulo = titulo;
+        this.mesEdicion = mesEdicion;
+        this.anioEdicion = anioEdicion;
+    }
+
+    public String getTitulo() { return titulo; }
+    public int getMesEdicion() { return mesEdicion; }
+    public int getAnioEdicion() { return anioEdicion; }
+
+    public int getAntiguedadAnios() {
+        int anioActual = Calendar.getInstance().get(Calendar.YEAR);
+        return anioActual - anioEdicion;
+    }
+
+    public boolean esPrimerSemestre() {
+        return mesEdicion >= 1 && mesEdicion <= 6;
+    }
+
+    public boolean esSegundoSemestre() {
+        return mesEdicion >= 7 && mesEdicion <= 12;
+    }
+
+    @Override
+    public String toString() {
+        String semestre = esPrimerSemestre() ? "1er Semestre" : "2do Semestre";
+        return "Título: '" + titulo + "' | Mes: " + mesEdicion + " (" + semestre + ") | Año: " + anioEdicion + " (Antigüedad: " + getAntiguedadAnios() + " años)";
+    }
+}
+
+// Clase Principal
+public class GestionLibros {
+    private static ArrayList<Libro> listaLibros = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        int opcion = 0;
+        do {
+            System.out.println("\n========================================");
+            System.out.println("      SISTEMA DE GESTIÓN DE LIBROS");
+            System.out.println("========================================");
+            System.out.println("1. Capturar información de un Libro");
+            System.out.println("2. Presentar todos los Libros");
+            System.out.println("3. Listar libros con < 10 años publicados en el 1er Semestre");
+            System.out.println("4. Listar libros con < 10 años publicados en el 2do Semestre");
+            System.out.println("5. Salir");
+            System.out.print("Seleccione una opción: ");
+
+            if (scanner.hasNextInt()) {
+                opcion = scanner.nextInt();
+                scanner.nextLine();
+            } else {
+                System.out.println("¡Error! Ingrese un número válido.");
+                scanner.nextLine();
+                continue;
+            }
+
+            switch (opcion) {
+                case 1:
+                    registrarLibro();
+                    break;
+                case 2:
+                    mostrarLibros();
+                    break;
+                case 3:
+                    listarPorAntiguedadYSemestre(true);
+                    break;
+                case 4:
+                    listarPorAntiguedadYSemestre(false);
+                    break;
+                case 5:
+                    System.out.println("Saliendo del programa...");
+                    break;
+                default:
+                    System.out.println("Opción no válida.");
+            }
+        } while (opcion != 5);
+    }
+
+    private static void registrarLibro() {
+        System.out.println("\n--- REGISTRO DE LIBRO ---");
+        System.out.print("Ingrese el título del libro: ");
+        String titulo = scanner.nextLine();
+
+        int mes = 0;
+        while (mes < 1 || mes > 12) {
+            System.out.print("Ingrese el mes de edición (1-12): ");
+            mes = scanner.nextInt();
+            if (mes < 1 || mes > 12) {
+                System.out.println("Mes inválido. Ingrese un número entre 1 y 12.");
+            }
+        }
+
+        System.out.print("Ingrese el año de edición (ej. 2020): ");
+        int anio = scanner.nextInt();
+        scanner.nextLine();
+
+        listaLibros.add(new Libro(titulo, mes, anio));
+        System.out.println("✔ Libro registrado exitosamente.");
+    }
+
+    private static void mostrarLibros() {
+        System.out.println("\n--- LISTADO GENERAL DE LIBROS ---");
+        if (listaLibros.isEmpty()) {
+            System.out.println("No hay libros en la base de datos.");
+        } else {
+            for (Libro l : listaLibros) {
+                System.out.println(l);
+            }
+        }
+    }
+
+    private static void listarPorAntiguedadYSemestre(boolean esPrimerSemestre) {
+        String textoSemestre = esPrimerSemestre ? "PRIMER SEMESTRE" : "SEGUNDO SEMESTRE";
+        System.out.println("\n--- LIBROS CON MENOS DE 10 AÑOS PUBLICADOS EN EL " + textoSemestre + " ---");
+
+        boolean encontrado = false;
+        for (Libro l : listaLibros) {
+            boolean cumpleSemestre = esPrimerSemestre ? l.esPrimerSemestre() : l.esSegundoSemestre();
+            if (l.getAntiguedadAnios() < 10 && cumpleSemestre) {
+                System.out.println(l);
+                encontrado = true;
+            }
+        }
+
+        if (!encontrado) {
+            System.out.println("No se encontraron libros con menos de 10 años editados en el " + textoSemestre.toLowerCase() + ".");
+        }
+    }
+}
+
+Ejercicio 3: Gestión de Aprendices SENA
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Scanner;
+
+// Clase Entidad
+class Aprendiz {
+    private String nombre;
+    private int edad;
+    private char genero; // F = Femenino, M = Masculino, O = Otro
+
+    public Aprendiz(String nombre, int edad, char genero) {
+        this.nombre = nombre;
+        this.edad = edad;
+        this.genero = Character.toUpperCase(genero);
+    }
+
+    public String getNombre() { return nombre; }
+    public int getEdad() { return edad; }
+    public char getGenero() { return genero; }
+
+    public String getGeneroCompleto() {
+        switch (genero) {
+            case 'F': return "Femenino";
+            case 'M': return "Masculino";
+            case 'O': return "Otro";
+            default: return "No Definido";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Nombre: " + nombre + " | Edad: " + edad + " años | Género: " + getGeneroCompleto() + " (" + genero + ")";
+    }
+}
+
+// Clase Principal
+public class GestionAprendices {
+    private static ArrayList<Aprendiz> listaAprendices = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        int opcion = 0;
+        do {
+            System.out.println("\n========================================");
+            System.out.println("   SISTEMA DE GESTIÓN DE APRENDICES SENA");
+            System.out.println("========================================");
+            System.out.println("1. Capturar aprendiz");
+            System.out.println("2. Presentar todos los aprendices");
+            System.out.println("3. Buscar aprendices por género (F/M/O)");
+            System.out.println("4. Listar aprendices en orden descendente por edad");
+            System.out.println("5. Salir");
+            System.out.print("Seleccione una opción: ");
+
+            if (scanner.hasNextInt()) {
+                opcion = scanner.nextInt();
+                scanner.nextLine();
+            } else {
+                System.out.println("¡Error! Ingrese un número válido.");
+                scanner.nextLine();
+                continue;
+            }
+
+            switch (opcion) {
+                case 1:
+                    registrarAprendiz();
+                    break;
+                case 2:
+                    mostrarAprendices();
+                    break;
+                case 3:
+                    buscarPorGenero();
+                    break;
+                case 4:
+                    listarDescendentePorEdad();
+                    break;
+                case 5:
+                    System.out.println("Saliendo del sistema...");
+                    break;
+                default:
+                    System.out.println("Opción no válida.");
+            }
+        } while (opcion != 5);
+    }
+
+    private static void registrarAprendiz() {
+        System.out.println("\n--- REGISTRO DE APRENDIZ ---");
+        System.out.print("Ingrese el nombre completo: ");
+        String nombre = scanner.nextLine();
+
+        System.out.print("Ingrese la edad: ");
+        int edad = scanner.nextInt();
+
+        char genero = ' ';
+        while (genero != 'F' && genero != 'M' && genero != 'O') {
+            System.out.print("Ingrese el género [F=Femenino, M=Masculino, O=Otro]: ");
+            genero = Character.toUpperCase(scanner.next().charAt(0));
+            if (genero != 'F' && genero != 'M' && genero != 'O') {
+                System.out.println("Opción de género inválida. Intente de nuevo.");
+            }
+        }
+        scanner.nextLine();
+
+        listaAprendices.add(new Aprendiz(nombre, edad, genero));
+        System.out.println("✔ Aprendiz registrado con éxito.");
+    }
+
+    private static void mostrarAprendices() {
+        System.out.println("\n--- LISTA GENERAL DE APRENDICES ---");
+        if (listaAprendices.isEmpty()) {
+            System.out.println("No hay aprendices registrados.");
+        } else {
+            for (Aprendiz a : listaAprendices) {
+                System.out.println(a);
+            }
+        }
+    }
+
+    private static void buscarPorGenero() {
+        System.out.println("\n--- BÚSQUEDA DE APRENDICES POR GÉNERO ---");
+        if (listaAprendices.isEmpty()) {
+            System.out.println("No hay aprendices registrados para buscar.");
+            return;
+        }
+
+        System.out.print("Ingrese el género a buscar (F/M/O): ");
+        char generoBusqueda = Character.toUpperCase(scanner.next().charAt(0));
+        scanner.nextLine();
+
+        boolean encontrado = false;
+        System.out.println("\nResultados para el género " + generoBusqueda + ":");
+        for (Aprendiz a : listaAprendices) {
+            if (a.getGenero() == generoBusqueda) {
+                System.out.println(a);
+                encontrado = true;
+            }
+        }
+
+        if (!encontrado) {
+            System.out.println("No se encontraron aprendices registrados con ese género.");
+        }
+    }
+
+    private static void listarDescendentePorEdad() {
+        System.out.println("\n--- APRENDICES ORDENADOS POR EDAD (DESCENDENTE) ---");
+        if (listaAprendices.isEmpty()) {
+            System.out.println("No hay aprendices registrados.");
+            return;
+        }
+
+        // Crear una copia para no alterar la lista original
+        ArrayList<Aprendiz> listaOrdenada = new ArrayList<>(listaAprendices);
+
+        // Ordenamiento por edad de mayor a menor
+        Collections.sort(listaOrdenada, new Comparator<Aprendiz>() {
+            @Override
+            public int compare(Aprendiz a1, Aprendiz a2) {
+                return Integer.compare(a2.getEdad(), a1.getEdad());
+            }
+        });
+
+        for (Aprendiz a : listaOrdenada) {
+            System.out.println(a);
+        }
+    }
+}
