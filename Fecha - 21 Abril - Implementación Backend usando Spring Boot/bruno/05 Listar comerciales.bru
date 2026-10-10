@@ -1,0 +1,16 @@
+meta {
+  name: Listar comerciales
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/comercial
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+}

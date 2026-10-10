@@ -1,0 +1,33 @@
+meta {
+  name: addUsuario con token (CSRF)
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/usuario
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "nombre": "Daniel Celis",
+    "correo": "dcelis@sena.edu.co",
+    "username": "dcelis",
+    "password": "123456"
+  }
+}
+
+docs {
+  addUsuario (paso 7 de la guía) también queda bloqueado por CSRF: responde 401 (ver la petición 07).
+  Por eso el usuario de prueba admin / admin123 se inserta directo en la base (ventas_db.sql).
+}
+
+assert {
+  res.status: eq 401
+}

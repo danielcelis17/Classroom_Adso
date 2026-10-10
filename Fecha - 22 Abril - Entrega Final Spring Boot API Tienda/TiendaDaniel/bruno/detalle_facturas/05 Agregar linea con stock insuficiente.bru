@@ -1,0 +1,23 @@
+meta {
+  name: Agregar linea con stock insuficiente
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/detalle-factura
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "facturaId": 1,
+    "productoId": 1,
+    "cantidad": 999
+  }
+}
+
+assert {
+  res.status: eq 400
+}

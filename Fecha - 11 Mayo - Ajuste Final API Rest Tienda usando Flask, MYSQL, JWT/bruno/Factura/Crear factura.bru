@@ -1,0 +1,32 @@
+meta {
+  name: Crear factura
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/factura
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "cliente_id": 2,
+    "metodo_pago": "Tarjeta",
+    "detalles": [
+      { "producto_id": 3, "cantidad": 2 },
+      { "producto_id": 5, "cantidad": 1 }
+    ]
+  }
+}
+
+assert {
+  res.status: eq 201
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("facturaId", res.body.factura.factura_id);
+  }
+}

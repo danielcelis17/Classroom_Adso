@@ -1,0 +1,15 @@
+meta {
+  name: Eliminar producto
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/api/producto/{{productoId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 204
+}

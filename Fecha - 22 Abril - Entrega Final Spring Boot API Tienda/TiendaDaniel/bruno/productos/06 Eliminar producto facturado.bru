@@ -1,0 +1,15 @@
+meta {
+  name: Eliminar producto facturado
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/producto/2
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 409
+}

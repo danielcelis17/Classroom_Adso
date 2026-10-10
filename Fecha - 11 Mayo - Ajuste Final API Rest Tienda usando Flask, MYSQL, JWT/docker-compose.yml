@@ -1,0 +1,45 @@
+name: fase4-tienda
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: fase4-tienda-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: America/Bogota
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    ports:
+      - "${DB_PORT_HOST}:3306"
+    volumes:
+      - ./database/tienda_db.sql:/docker-entrypoint-initdb.d/01-tienda_db.sql:ro
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD -e 'SELECT 1 FROM tienda.usuarios LIMIT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: ./app-tienda
+    container_name: fase4-tienda-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FLASK_RUN_HOST: 0.0.0.0
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    ports:
+      - "${API_PORT_HOST}:5000"
+    volumes:
+      # Hot reload: el código del host se monta en el contenedor
+      - ./app-tienda:/app
+
+volumes:
+  db_data:

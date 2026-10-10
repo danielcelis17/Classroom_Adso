@@ -1,0 +1,23 @@
+meta {
+  name: Crear cliente con documento repetido
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/cliente
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "numeroDocumento": "1012345678",
+    "nombre": "Otra",
+    "apellido": "Persona"
+  }
+}
+
+assert {
+  res.status: eq 409
+}

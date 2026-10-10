@@ -1,0 +1,15 @@
+meta {
+  name: Obtener cliente
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/cliente/{{clienteId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+}

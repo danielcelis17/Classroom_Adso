@@ -1,0 +1,17 @@
+meta {
+  name: Factura como al inicio
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/api/factura/1
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.detalles.length: eq 2
+  res.body.totalPagar: eq 203300
+}

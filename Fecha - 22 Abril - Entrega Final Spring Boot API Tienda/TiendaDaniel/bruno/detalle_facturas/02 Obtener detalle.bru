@@ -1,0 +1,18 @@
+meta {
+  name: Obtener detalle
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/detalle-factura/1
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.facturaId: eq 1
+  res.body.cantidad: eq 2
+  res.body.subtotalLinea: eq 70000
+}

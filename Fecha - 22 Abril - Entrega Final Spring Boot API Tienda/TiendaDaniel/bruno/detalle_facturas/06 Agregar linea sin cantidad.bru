@@ -1,0 +1,23 @@
+meta {
+  name: Agregar linea sin cantidad
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/detalle-factura
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "facturaId": 1,
+    "productoId": 1
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.errores.cantidad: isDefined
+}

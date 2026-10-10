@@ -1,0 +1,16 @@
+meta {
+  name: Stock descontado
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/producto/4
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.stock: eq 58
+}

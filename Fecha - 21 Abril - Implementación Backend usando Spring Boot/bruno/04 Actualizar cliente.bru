@@ -1,0 +1,26 @@
+meta {
+  name: Actualizar cliente
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/cliente/{{clienteId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombre": "Ana María",
+    "apellido1": "Pérez",
+    "apellido2": "Ríos",
+    "ciudad": "Medellín",
+    "categoria": 200
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.ciudad: eq Medellín
+}

@@ -1,0 +1,29 @@
+meta {
+  name: Crear producto
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/productos
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "nombre_producto": "Teclado",
+    "descripcion": "Teclado mecánico USB",
+    "precio_unitario": "100000.00",
+    "stock": 10,
+    "iva_porcentaje": "19.00"
+  }
+}

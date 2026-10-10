@@ -1,0 +1,34 @@
+meta {
+  name: Crear cliente
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/cliente
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "tipo_documento": "CC",
+    "numero_documento": "52111222",
+    "nombre": "Sofía",
+    "apellido": "Ruiz",
+    "telefono": "3112223344",
+    "email": "sofia.ruiz@correo.com",
+    "direccion": "Calle 100 # 15-20",
+    "ciudad": "Bogotá"
+  }
+}
+
+assert {
+  res.status: eq 201
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("clienteId", res.body.cliente_id);
+  }
+}

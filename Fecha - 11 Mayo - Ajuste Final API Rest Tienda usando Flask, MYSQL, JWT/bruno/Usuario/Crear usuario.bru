@@ -1,0 +1,26 @@
+meta {
+  name: Crear usuario
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/usuario
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombre": "Daniel Celis",
+    "correo": "daniel@tienda.com",
+    "username": "daniel",
+    "password": "clave123"
+  }
+}
+
+tests {
+  test("crea el usuario (201) o ya existía (409)", function () {
+    expect([201, 409]).to.include(res.status);
+  });
+}

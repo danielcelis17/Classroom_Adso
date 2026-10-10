@@ -1,0 +1,15 @@
+meta {
+  name: Eliminar cliente
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/cliente/{{clienteId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}

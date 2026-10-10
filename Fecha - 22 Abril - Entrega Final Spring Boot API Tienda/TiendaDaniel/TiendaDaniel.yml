@@ -1,0 +1,1043 @@
+opencollection: 1.0.0
+info:
+  name: TiendaDaniel
+  version: '1'
+config:
+  environments:
+    - name: local
+      variables:
+        - name: baseUrl
+          value: http://localhost:8081
+items:
+  - info:
+      name: clientes
+      type: folder
+      seq: 1
+    items:
+      - info:
+          name: Listar clientes
+          type: http
+          seq: 1
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/cliente'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body
+              operator: isArray
+              value: ''
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Obtener cliente
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/cliente/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.numeroDocumento
+              operator: eq
+              value: '"1012345678"'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Crear cliente
+          type: http
+          seq: 3
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/cliente'
+          body:
+            type: json
+            data: |-
+              {
+                "numeroDocumento": "1098765432",
+                "nombre": "Daniel",
+                "apellido": "Celis Paredes",
+                "telefono": "3009876543",
+                "email": "daniel.celis@correo.com",
+                "direccion": "Calle 26 # 50-20"
+              }
+        runtime:
+          scripts:
+            - type: after-response
+              code: bru.setVar("clienteId", res.body.clienteId);
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '201'
+            - expression: res.body.tipoDocumento
+              operator: eq
+              value: CC
+            - expression: res.body.ciudad
+              operator: eq
+              value: Bogotá
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Crear cliente con documento repetido
+          type: http
+          seq: 4
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/cliente'
+          body:
+            type: json
+            data: |-
+              {
+                "numeroDocumento": "1012345678",
+                "nombre": "Otra",
+                "apellido": "Persona"
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '409'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Crear cliente sin datos obligatorios
+          type: http
+          seq: 5
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/cliente'
+          body:
+            type: json
+            data: |-
+              {
+                "email": "no-es-un-correo"
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '400'
+            - expression: res.body.errores.nombre
+              operator: isDefined
+              value: ''
+            - expression: res.body.errores.email
+              operator: isDefined
+              value: ''
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Actualizar cliente
+          type: http
+          seq: 6
+        http:
+          method: PUT
+          url: '{{baseUrl}}/api/cliente/{{clienteId}}'
+          body:
+            type: json
+            data: |-
+              {
+                "tipoDocumento": "CC",
+                "numeroDocumento": "1098765432",
+                "nombre": "Daniel Steven",
+                "apellido": "Celis Paredes",
+                "telefono": "3009876543",
+                "email": "daniel.celis@correo.com",
+                "direccion": "Calle 26 # 50-20",
+                "ciudad": "Medellín"
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.ciudad
+              operator: eq
+              value: Medellín
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Facturas del cliente
+          type: http
+          seq: 7
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/cliente/1/facturas'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.length
+              operator: eq
+              value: '1'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Eliminar cliente con facturas
+          type: http
+          seq: 8
+        http:
+          method: DELETE
+          url: '{{baseUrl}}/api/cliente/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '409'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Eliminar cliente
+          type: http
+          seq: 9
+        http:
+          method: DELETE
+          url: '{{baseUrl}}/api/cliente/{{clienteId}}'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '204'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Obtener cliente eliminado
+          type: http
+          seq: 10
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/cliente/{{clienteId}}'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '404'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+  - info:
+      name: productos
+      type: folder
+      seq: 2
+    items:
+      - info:
+          name: Listar productos
+          type: http
+          seq: 1
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/producto'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body
+              operator: isArray
+              value: ''
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Obtener producto
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/producto/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.nombreProducto
+              operator: eq
+              value: Teclado inalámbrico
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Crear producto
+          type: http
+          seq: 3
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/producto'
+          body:
+            type: json
+            data: |-
+              {
+                "nombreProducto": "Audífonos Bluetooth",
+                "descripcion": "Audífonos inalámbricos con micrófono",
+                "precioUnitario": 50000,
+                "stock": 5
+              }
+        runtime:
+          scripts:
+            - type: after-response
+              code: bru.setVar("productoId", res.body.productoId);
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '201'
+            - expression: res.body.ivaPorcentaje
+              operator: eq
+              value: '19'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Crear producto con precio negativo
+          type: http
+          seq: 4
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/producto'
+          body:
+            type: json
+            data: |-
+              {
+                "nombreProducto": "Producto inválido",
+                "precioUnitario": -10
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '400'
+            - expression: res.body.errores.precioUnitario
+              operator: isDefined
+              value: ''
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Actualizar producto
+          type: http
+          seq: 5
+        http:
+          method: PUT
+          url: '{{baseUrl}}/api/producto/{{productoId}}'
+          body:
+            type: json
+            data: |-
+              {
+                "nombreProducto": "Audífonos Bluetooth 5.3",
+                "descripcion": "Audífonos inalámbricos con micrófono",
+                "precioUnitario": 50000,
+                "stock": 5,
+                "ivaPorcentaje": 19
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.nombreProducto
+              operator: eq
+              value: Audífonos Bluetooth 5.3
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Eliminar producto facturado
+          type: http
+          seq: 6
+        http:
+          method: DELETE
+          url: '{{baseUrl}}/api/producto/2'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '409'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Eliminar producto
+          type: http
+          seq: 7
+        http:
+          method: DELETE
+          url: '{{baseUrl}}/api/producto/{{productoId}}'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '204'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Obtener producto eliminado
+          type: http
+          seq: 8
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/producto/{{productoId}}'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '404'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+  - info:
+      name: facturas
+      type: folder
+      seq: 3
+    items:
+      - info:
+          name: Listar facturas
+          type: http
+          seq: 1
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/factura'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body
+              operator: isArray
+              value: ''
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Obtener factura
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/factura/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.numeroFactura
+              operator: eq
+              value: FAC-000001
+            - expression: res.body.totalPagar
+              operator: eq
+              value: '203300'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Crear factura
+          type: http
+          seq: 3
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/factura'
+          body:
+            type: json
+            data: |-
+              {
+                "clienteId": 2,
+                "metodoPago": "Tarjeta",
+                "detalles": [
+                  { "productoId": 4, "cantidad": 2 },
+                  { "productoId": 6, "cantidad": 1 }
+                ]
+              }
+        runtime:
+          scripts:
+            - type: after-response
+              code: bru.setVar("facturaId", res.body.facturaId);
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '201'
+            - expression: res.body.subtotal
+              operator: eq
+              value: '64000'
+            - expression: res.body.totalIva
+              operator: eq
+              value: '8240'
+            - expression: res.body.totalPagar
+              operator: eq
+              value: '72240'
+            - expression: res.body.detalles.length
+              operator: eq
+              value: '2'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Stock descontado
+          type: http
+          seq: 4
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/producto/4'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.stock
+              operator: eq
+              value: '58'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Crear factura con stock insuficiente
+          type: http
+          seq: 5
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/factura'
+          body:
+            type: json
+            data: |-
+              {
+                "clienteId": 2,
+                "detalles": [ { "productoId": 4, "cantidad": 999 } ]
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '400'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Actualizar factura
+          type: http
+          seq: 6
+        http:
+          method: PUT
+          url: '{{baseUrl}}/api/factura/{{facturaId}}'
+          body:
+            type: json
+            data: |-
+              {
+                "clienteId": 3,
+                "metodoPago": "Transferencia"
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.cliente.clienteId
+              operator: eq
+              value: '3'
+            - expression: res.body.metodoPago
+              operator: eq
+              value: Transferencia
+            - expression: res.body.totalPagar
+              operator: eq
+              value: '72240'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Facturas del cliente nuevo
+          type: http
+          seq: 7
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/cliente/3/facturas'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.length
+              operator: eq
+              value: '1'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Eliminar factura
+          type: http
+          seq: 8
+        http:
+          method: DELETE
+          url: '{{baseUrl}}/api/factura/{{facturaId}}'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '204'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Stock devuelto
+          type: http
+          seq: 9
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/producto/4'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.stock
+              operator: eq
+              value: '60'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Obtener factura eliminada
+          type: http
+          seq: 10
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/factura/{{facturaId}}'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '404'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+  - info:
+      name: detalle_facturas
+      type: folder
+      seq: 4
+    items:
+      - info:
+          name: Listar detalles
+          type: http
+          seq: 1
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/detalle-factura'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body
+              operator: isArray
+              value: ''
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Obtener detalle
+          type: http
+          seq: 2
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/detalle-factura/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.facturaId
+              operator: eq
+              value: '1'
+            - expression: res.body.cantidad
+              operator: eq
+              value: '2'
+            - expression: res.body.subtotalLinea
+              operator: eq
+              value: '70000'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Agregar linea
+          type: http
+          seq: 3
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/detalle-factura'
+          body:
+            type: json
+            data: |-
+              {
+                "facturaId": 1,
+                "productoId": 1,
+                "cantidad": 1
+              }
+        runtime:
+          scripts:
+            - type: after-response
+              code: bru.setVar("detalleId", res.body.detalleId);
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '201'
+            - expression: res.body.precioVenta
+              operator: eq
+              value: '85000'
+            - expression: res.body.subtotalLinea
+              operator: eq
+              value: '85000'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Factura con la linea nueva
+          type: http
+          seq: 4
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/factura/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.detalles.length
+              operator: eq
+              value: '3'
+            - expression: res.body.subtotal
+              operator: eq
+              value: '275000'
+            - expression: res.body.totalIva
+              operator: eq
+              value: '29450'
+            - expression: res.body.totalPagar
+              operator: eq
+              value: '304450'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Agregar linea con stock insuficiente
+          type: http
+          seq: 5
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/detalle-factura'
+          body:
+            type: json
+            data: |-
+              {
+                "facturaId": 1,
+                "productoId": 1,
+                "cantidad": 999
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '400'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Agregar linea sin cantidad
+          type: http
+          seq: 6
+        http:
+          method: POST
+          url: '{{baseUrl}}/api/detalle-factura'
+          body:
+            type: json
+            data: |-
+              {
+                "facturaId": 1,
+                "productoId": 1
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '400'
+            - expression: res.body.errores.cantidad
+              operator: isDefined
+              value: ''
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Actualizar linea
+          type: http
+          seq: 7
+        http:
+          method: PUT
+          url: '{{baseUrl}}/api/detalle-factura/{{detalleId}}'
+          body:
+            type: json
+            data: |-
+              {
+                "productoId": 1,
+                "cantidad": 2
+              }
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.subtotalLinea
+              operator: eq
+              value: '170000'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Factura recalculada
+          type: http
+          seq: 8
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/factura/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.subtotal
+              operator: eq
+              value: '360000'
+            - expression: res.body.totalIva
+              operator: eq
+              value: '45600'
+            - expression: res.body.totalPagar
+              operator: eq
+              value: '405600'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Stock descontado
+          type: http
+          seq: 9
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/producto/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.stock
+              operator: eq
+              value: '23'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Eliminar linea
+          type: http
+          seq: 10
+        http:
+          method: DELETE
+          url: '{{baseUrl}}/api/detalle-factura/{{detalleId}}'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '204'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Factura como al inicio
+          type: http
+          seq: 11
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/factura/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.detalles.length
+              operator: eq
+              value: '2'
+            - expression: res.body.totalPagar
+              operator: eq
+              value: '203300'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Stock devuelto
+          type: http
+          seq: 12
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/producto/1'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '200'
+            - expression: res.body.stock
+              operator: eq
+              value: '25'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+      - info:
+          name: Obtener detalle eliminado
+          type: http
+          seq: 13
+        http:
+          method: GET
+          url: '{{baseUrl}}/api/detalle-factura/{{detalleId}}'
+        runtime:
+          assertions:
+            - expression: res.status
+              operator: eq
+              value: '404'
+        settings:
+          encodeUrl: true
+          timeout: 0
+          followRedirects: true
+          maxRedirects: 5
+          forwardAuthorizationHeader: true
+bundled: true
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+    exportedAt: '2026-10-10T16:24:01.790Z'
+    exportedUsing: Bruno

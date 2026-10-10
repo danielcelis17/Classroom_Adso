@@ -1,0 +1,31 @@
+meta {
+  name: Crear producto
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/producto
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre_producto": "Panela 1 kg",
+    "descripcion": "Panela en bloque",
+    "precio_unitario": 4500,
+    "stock": 30,
+    "iva_porcentaje": 0
+  }
+}
+
+assert {
+  res.status: eq 201
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("productoId", res.body.producto_id);
+  }
+}

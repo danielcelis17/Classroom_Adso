@@ -1,0 +1,23 @@
+meta {
+  name: Crear cliente sin datos obligatorios
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/cliente
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "no-es-un-correo"
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.errores.nombre: isDefined
+  res.body.errores.email: isDefined
+}

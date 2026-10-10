@@ -1,0 +1,25 @@
+meta {
+  name: Actualizar factura
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{baseUrl}}/api/factura/{{facturaId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "clienteId": 3,
+    "metodoPago": "Transferencia"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.cliente.clienteId: eq 3
+  res.body.metodoPago: eq Transferencia
+  res.body.totalPagar: eq 72240
+}

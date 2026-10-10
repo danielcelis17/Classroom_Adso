@@ -1,0 +1,26 @@
+meta {
+  name: Todos los Clientes con token
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/cliente
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+  res.body[0].pedidos: isArray
+  res.body[0].nombre: eq Aarón
+  res.body[0].categoria: eq 100
+  res.body[0].pedidos[0].fecha: eq 2016-09-10T05:00:00.000Z
+  res.body[0].pedidos[0].comercial.nombre: eq Antonio
+  res.body[0].pedidos[0].comercial.comision: eq 0.12
+}

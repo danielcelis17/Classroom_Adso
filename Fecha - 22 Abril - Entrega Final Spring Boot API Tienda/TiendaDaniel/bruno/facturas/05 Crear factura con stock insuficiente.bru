@@ -1,0 +1,22 @@
+meta {
+  name: Crear factura con stock insuficiente
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/factura
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "clienteId": 2,
+    "detalles": [ { "productoId": 4, "cantidad": 999 } ]
+  }
+}
+
+assert {
+  res.status: eq 400
+}

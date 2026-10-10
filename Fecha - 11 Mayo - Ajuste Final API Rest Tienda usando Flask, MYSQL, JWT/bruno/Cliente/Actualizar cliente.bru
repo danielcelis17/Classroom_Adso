@@ -1,0 +1,28 @@
+meta {
+  name: Actualizar cliente
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/cliente/{{clienteId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "tipo_documento": "CC",
+    "numero_documento": "52111222",
+    "nombre": "Sofía",
+    "apellido": "Ruiz",
+    "telefono": "3112223344",
+    "email": "sofia.ruiz@correo.com",
+    "direccion": "Calle 100 # 15-20",
+    "ciudad": "Medellín"
+  }
+}
+
+assert {
+  res.status: eq 200
+}

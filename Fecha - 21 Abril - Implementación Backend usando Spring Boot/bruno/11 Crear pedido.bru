@@ -1,0 +1,29 @@
+meta {
+  name: Crear pedido
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/api/pedido
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "total": 350.75,
+    "fecha": "2026-10-10T05:00:00.000Z",
+    "cliente": { "id": {{clienteId}} },
+    "comercial": { "id": {{comercialId}} }
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.fecha: eq 2026-10-10T05:00:00.000Z
+}
+
+script:post-response {
+  bru.setVar("pedidoId", res.body.id);
+}

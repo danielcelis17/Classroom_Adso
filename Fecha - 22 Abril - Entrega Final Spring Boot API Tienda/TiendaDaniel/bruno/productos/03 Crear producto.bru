@@ -1,0 +1,29 @@
+meta {
+  name: Crear producto
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/producto
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombreProducto": "Audífonos Bluetooth",
+    "descripcion": "Audífonos inalámbricos con micrófono",
+    "precioUnitario": 50000,
+    "stock": 5
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.ivaPorcentaje: eq 19
+}
+
+script:post-response {
+  bru.setVar("productoId", res.body.productoId);
+}

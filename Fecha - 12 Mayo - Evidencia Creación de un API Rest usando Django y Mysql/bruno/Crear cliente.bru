@@ -1,0 +1,25 @@
+meta {
+  name: Crear cliente
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/cliente
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "nombre": "Lucía",
+    "apellido1": "Martínez",
+    "apellido2": "Rojas",
+    "ciudad": "Bogotá",
+    "categoria": 150
+  }
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Actualizar comercial
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{baseUrl}}/api/comercial/{{comercialId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombre": "Laura",
+    "apellido1": "Gómez",
+    "apellido2": "Díaz",
+    "comision": 0.15
+  }
+}
+
+assert {
+  res.status: eq 200
+}

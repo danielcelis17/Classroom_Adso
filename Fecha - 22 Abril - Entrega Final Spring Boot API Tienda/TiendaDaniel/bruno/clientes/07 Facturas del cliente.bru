@@ -1,0 +1,16 @@
+meta {
+  name: Facturas del cliente
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/cliente/1/facturas
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.length: eq 1
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Obtener cliente eliminado
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/api/cliente/{{clienteId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

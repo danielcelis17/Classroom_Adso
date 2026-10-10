@@ -1,0 +1,35 @@
+meta {
+  name: Crear cliente con token (CSRF)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/cliente
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "nombre": "Ana",
+    "apellido1": "Pérez",
+    "apellido2": "Ríos",
+    "ciudad": "Bogotá",
+    "categoria": 150
+  }
+}
+
+docs {
+  Limitación del código de la guía: Spring Security deja activa la protección CSRF y rechaza
+  todo POST, PUT o DELETE aunque el token sea válido. El rechazo se reenvía a /error, que la
+  guía también deja protegido, así que la respuesta final es 401. No se guarda nada.
+}
+
+assert {
+  res.status: eq 401
+}

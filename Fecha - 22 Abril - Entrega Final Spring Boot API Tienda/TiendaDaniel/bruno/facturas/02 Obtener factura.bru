@@ -1,0 +1,17 @@
+meta {
+  name: Obtener factura
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/factura/1
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.numeroFactura: eq FAC-000001
+  res.body.totalPagar: eq 203300
+}

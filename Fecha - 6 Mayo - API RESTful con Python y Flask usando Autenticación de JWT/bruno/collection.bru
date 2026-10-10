@@ -1,0 +1,12 @@
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Las peticiones con auth: inherit usan este token.
+  Ejecute primero "Usuario/Login": guarda el access_token en la variable token (bru.setVar).
+}

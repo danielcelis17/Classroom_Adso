@@ -1,0 +1,23 @@
+meta {
+  name: Crear producto con precio negativo
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/producto
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombreProducto": "Producto inválido",
+    "precioUnitario": -10
+  }
+}
+
+assert {
+  res.status: eq 400
+  res.body.errores.precioUnitario: isDefined
+}

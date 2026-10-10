@@ -1,0 +1,19 @@
+meta {
+  name: Listar comerciales
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/comercial
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/json
+}

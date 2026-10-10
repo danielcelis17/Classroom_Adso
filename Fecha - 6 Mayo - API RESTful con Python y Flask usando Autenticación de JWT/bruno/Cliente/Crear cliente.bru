@@ -1,0 +1,25 @@
+meta {
+  name: Crear cliente
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/cliente
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Ana",
+    "apellido1": "Pérez",
+    "apellido2": "Ríos",
+    "ciudad": "Bogotá",
+    "categoria": 150
+  }
+}
+
+assert {
+  res.status: eq 200
+}

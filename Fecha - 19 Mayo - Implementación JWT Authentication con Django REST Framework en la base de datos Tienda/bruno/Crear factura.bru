@@ -1,0 +1,30 @@
+meta {
+  name: Crear factura
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/facturas
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "numero_factura": "FV-0001",
+    "cliente": 1,
+    "subtotal": "200000.00",
+    "total_iva": "38000.00",
+    "total_pagar": "238000.00",
+    "metodo_pago": "Nequi/Daviplata"
+  }
+}

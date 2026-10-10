@@ -1,0 +1,21 @@
+meta {
+  name: Listar pedidos
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/pedido
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  // La API no devuelve el id al crear: se toma el del último registro (posición 0 de cada fila)
+  const filas = res.body.pedidos;
+  bru.setVar("pedidoId", filas[filas.length - 1][0]);
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Obtener producto eliminado
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/producto/{{productoId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

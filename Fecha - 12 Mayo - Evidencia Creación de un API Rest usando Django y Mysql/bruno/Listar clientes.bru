@@ -1,0 +1,15 @@
+meta {
+  name: Listar clientes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/cliente
+  body: none
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}

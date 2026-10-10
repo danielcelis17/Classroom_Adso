@@ -1,0 +1,16 @@
+meta {
+  name: Stock devuelto
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{baseUrl}}/api/producto/4
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.stock: eq 60
+}

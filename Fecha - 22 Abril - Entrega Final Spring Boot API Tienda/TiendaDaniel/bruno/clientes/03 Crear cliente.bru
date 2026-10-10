@@ -1,0 +1,32 @@
+meta {
+  name: Crear cliente
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/cliente
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "numeroDocumento": "1098765432",
+    "nombre": "Daniel",
+    "apellido": "Celis Paredes",
+    "telefono": "3009876543",
+    "email": "daniel.celis@correo.com",
+    "direccion": "Calle 26 # 50-20"
+  }
+}
+
+assert {
+  res.status: eq 201
+  res.body.tipoDocumento: eq CC
+  res.body.ciudad: eq Bogotá
+}
+
+script:post-response {
+  bru.setVar("clienteId", res.body.clienteId);
+}

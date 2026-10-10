@@ -1,0 +1,18 @@
+meta {
+  name: Obtener pedido
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/api/pedido/1
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.cliente.id: isNumber
+  res.body.comercial.id: isNumber
+  res.body.fecha: eq 2017-10-05T05:00:00.000Z
+}

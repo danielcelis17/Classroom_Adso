@@ -1,0 +1,18 @@
+meta {
+  name: Factura recalculada
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/factura/1
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.subtotal: eq 360000
+  res.body.totalIva: eq 45600
+  res.body.totalPagar: eq 405600
+}

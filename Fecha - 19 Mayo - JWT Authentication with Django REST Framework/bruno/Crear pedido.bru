@@ -1,0 +1,28 @@
+meta {
+  name: Crear pedido
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/pedido
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "total": 250.75,
+    "fecha": "2026-10-10",
+    "id_cliente": 1,
+    "id_comercial": 2
+  }
+}

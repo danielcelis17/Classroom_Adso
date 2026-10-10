@@ -1,0 +1,24 @@
+meta {
+  name: Crear comercial
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/comercial
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Laura",
+    "apellido1": "Mora",
+    "apellido2": "Castro",
+    "comision": 0.12
+  }
+}
+
+assert {
+  res.status: eq 200
+}

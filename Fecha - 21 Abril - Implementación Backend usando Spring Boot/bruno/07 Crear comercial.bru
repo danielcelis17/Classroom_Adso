@@ -1,0 +1,28 @@
+meta {
+  name: Crear comercial
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/comercial
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombre": "Laura",
+    "apellido1": "Gómez",
+    "apellido2": "Díaz",
+    "comision": 0.1
+  }
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  bru.setVar("comercialId", res.body.id);
+}

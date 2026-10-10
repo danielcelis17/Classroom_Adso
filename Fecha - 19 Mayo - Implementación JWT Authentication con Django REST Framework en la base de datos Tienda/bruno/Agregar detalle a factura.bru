@@ -1,0 +1,29 @@
+meta {
+  name: Agregar detalle a factura
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/detalle-facturas
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "factura": 1,
+    "producto": 1,
+    "cantidad": 2,
+    "precio_venta": "100000.00",
+    "subtotal_linea": "200000.00"
+  }
+}

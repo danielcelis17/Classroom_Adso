@@ -1,0 +1,16 @@
+meta {
+  name: Listar facturas
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/factura
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: isArray
+}

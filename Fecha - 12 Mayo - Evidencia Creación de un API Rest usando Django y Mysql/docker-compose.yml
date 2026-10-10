@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mysql:8.0
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_HOST_PORT:-3307}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      # Se ejecuta solo la primera vez (volumen vacío)
+      - ./db/ventas_db.sql:/docker-entrypoint-initdb.d/01-ventas_db.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 300s
+
+  web:
+    build: .
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+    ports:
+      - "8000:8000"
+    volumes:
+      # Hot reload: el código del host se monta en el contenedor
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

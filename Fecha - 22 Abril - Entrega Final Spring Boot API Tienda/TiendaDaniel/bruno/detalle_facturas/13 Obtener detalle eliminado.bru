@@ -1,0 +1,15 @@
+meta {
+  name: Obtener detalle eliminado
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/api/detalle-factura/{{detalleId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

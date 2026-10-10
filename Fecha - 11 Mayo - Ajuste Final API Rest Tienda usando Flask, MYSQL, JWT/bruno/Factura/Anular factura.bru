@@ -1,0 +1,15 @@
+meta {
+  name: Anular factura
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/factura/{{facturaId}}
+  body: none
+  auth: inherit
+}
+
+assert {
+  res.status: eq 200
+}

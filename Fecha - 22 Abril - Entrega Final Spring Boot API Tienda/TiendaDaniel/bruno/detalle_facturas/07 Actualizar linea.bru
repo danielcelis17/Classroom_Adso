@@ -1,0 +1,23 @@
+meta {
+  name: Actualizar linea
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{baseUrl}}/api/detalle-factura/{{detalleId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "productoId": 1,
+    "cantidad": 2
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.subtotalLinea: eq 170000
+}

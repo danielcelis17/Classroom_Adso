@@ -1,0 +1,25 @@
+meta {
+  name: Actualizar producto
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/producto/{{productoId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre_producto": "Panela 1 kg",
+    "descripcion": "Panela en bloque",
+    "precio_unitario": 4800,
+    "stock": 30,
+    "iva_porcentaje": 0
+  }
+}
+
+assert {
+  res.status: eq 200
+}

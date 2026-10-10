@@ -1,0 +1,25 @@
+meta {
+  name: Actualizar cliente
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/cliente/{{clienteId}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "nombre": "Ana",
+    "apellido1": "Pérez",
+    "apellido2": "Ríos",
+    "ciudad": "Cali",
+    "categoria": 150
+  }
+}
+
+assert {
+  res.status: eq 200
+}

@@ -1,0 +1,21 @@
+meta {
+  name: Listar clientes
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/cliente
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:post-response {
+  // La guía no devuelve el id al crear: se toma el del último cliente de la lista (posición 0 de cada fila)
+  const filas = res.body.clientes;
+  bru.setVar("clienteId", filas[filas.length - 1][0]);
+}

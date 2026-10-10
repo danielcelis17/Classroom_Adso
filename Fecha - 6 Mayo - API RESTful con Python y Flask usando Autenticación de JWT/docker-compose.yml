@@ -1,0 +1,40 @@
+name: fase3-ventas
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: fase3-ventas-db
+    restart: unless-stopped
+    environment:
+      # config/db.py de la guía usa root sin contraseña (como XAMPP)
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      TZ: America/Bogota
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+    ports:
+      - "${DB_PORT_HOST}:3306"
+      # La API comparte la red de este contenedor, así que su puerto se publica aquí
+      - "${API_PORT_HOST}:5000"
+    volumes:
+      - ./database/ventas_db.sql:/docker-entrypoint-initdb.d/01-ventas_db.sql:ro
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -uroot -e 'SELECT 1 FROM ventas.usuarios LIMIT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: ./app-ventas
+    container_name: fase3-ventas-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    # Misma red que MySQL: host='localhost' de config/db.py llega a la base sin cambiar el código
+    network_mode: "service:db"
+    volumes:
+      # Hot reload: el código del host se monta en el contenedor
+      - ./app-ventas:/app
+
+volumes:
+  db_data:

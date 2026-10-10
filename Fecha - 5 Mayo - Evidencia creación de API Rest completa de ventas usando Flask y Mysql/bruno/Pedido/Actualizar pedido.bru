@@ -1,0 +1,24 @@
+meta {
+  name: Actualizar pedido
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{baseUrl}}/api/pedido/{{pedidoId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "total": 400,
+    "fecha": "2026-10-10",
+    "id_cliente": 1,
+    "id_comercial": 2
+  }
+}
+
+assert {
+  res.status: eq 200
+}

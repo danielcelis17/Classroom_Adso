@@ -1,0 +1,32 @@
+meta {
+  name: Crear cliente
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/clientes
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "tipo_documento": "CC",
+    "numero_documento": "1012345678",
+    "nombre": "Daniel",
+    "apellido": "Celis",
+    "telefono": "3001234567",
+    "email": "daniel@ejemplo.com",
+    "direccion": "Calle 1 # 2-3",
+    "ciudad": "Bogotá"
+  }
+}

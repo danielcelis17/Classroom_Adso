@@ -1,0 +1,6 @@
+.env
+.git
+insumos
+**/__pycache__
+*.Zone.Identifier
+db

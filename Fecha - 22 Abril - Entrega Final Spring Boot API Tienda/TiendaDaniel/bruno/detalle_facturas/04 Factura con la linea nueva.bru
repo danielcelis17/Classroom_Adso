@@ -1,0 +1,19 @@
+meta {
+  name: Factura con la linea nueva
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/factura/1
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body.detalles.length: eq 3
+  res.body.subtotal: eq 275000
+  res.body.totalIva: eq 29450
+  res.body.totalPagar: eq 304450
+}

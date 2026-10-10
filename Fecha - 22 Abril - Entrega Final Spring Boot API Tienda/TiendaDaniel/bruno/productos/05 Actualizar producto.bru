@@ -1,0 +1,26 @@
+meta {
+  name: Actualizar producto
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/producto/{{productoId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nombreProducto": "Audífonos Bluetooth 5.3",
+    "descripcion": "Audífonos inalámbricos con micrófono",
+    "precioUnitario": 50000,
+    "stock": 5,
+    "ivaPorcentaje": 19
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.nombreProducto: eq Audífonos Bluetooth 5.3
+}

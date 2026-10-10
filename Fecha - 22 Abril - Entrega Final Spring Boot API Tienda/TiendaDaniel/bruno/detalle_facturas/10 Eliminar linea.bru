@@ -1,0 +1,15 @@
+meta {
+  name: Eliminar linea
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{baseUrl}}/api/detalle-factura/{{detalleId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 204
+}

@@ -1,0 +1,24 @@
+meta {
+  name: Crear pedido con cliente inexistente
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/api/pedido
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "total": 10,
+    "fecha": "2026-10-10",
+    "cliente": { "id": 999999 },
+    "comercial": { "id": 1 }
+  }
+}
+
+assert {
+  res.status: eq 400
+}

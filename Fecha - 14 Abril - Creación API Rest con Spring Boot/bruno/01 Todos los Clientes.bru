@@ -1,0 +1,15 @@
+meta {
+  name: Todos los Clientes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/cliente
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}

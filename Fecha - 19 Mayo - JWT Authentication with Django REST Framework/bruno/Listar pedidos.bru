@@ -1,0 +1,19 @@
+meta {
+  name: Listar pedidos
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/pedido
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Accept: application/json
+}
